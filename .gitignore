@@ -1,0 +1,8 @@
+node_modules/
+.env
+.vercel
+data/orders.json
+public/assets/uploads/*
+!public/assets/uploads/.gitkeep
+*.log
+.DS_Store

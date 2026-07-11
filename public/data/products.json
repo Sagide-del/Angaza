@@ -1,0 +1,16 @@
+[
+  {
+    "id": "pp1-handwriting-pack",
+    "title": "PP1 Handwriting Pack",
+    "description": "",
+    "grade": "pp1",
+    "type": "worksheet",
+    "isFree": false,
+    "featured": true,
+    "price": 20,
+    "format": "image",
+    "fileUrl": "/assets/uploads/1783801570163-handwriting-practice.png",
+    "createdAt": "2026-07-11T20:26:10.151Z",
+    "preview": "/assets/uploads/1783801570163-handwriting-practice.png"
+  }
+]

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#FFF3E0"/>
+  <g font-family="Fredoka, sans-serif" font-weight="700">
+    <text x="400" y="90" text-anchor="middle" font-size="44" fill="#FF6B4A">Kenya Animals Colouring</text>
+    <circle cx="250" cy="320" r="120" fill="none" stroke="#1E2A44" stroke-width="4"/>
+    <ellipse cx="215" cy="300" rx="14" ry="18" fill="none" stroke="#1E2A44" stroke-width="4"/>
+    <ellipse cx="285" cy="300" rx="14" ry="18" fill="none" stroke="#1E2A44" stroke-width="4"/>
+    <path d="M210 360 q40 40 80 0" fill="none" stroke="#1E2A44" stroke-width="4"/>
+    <path d="M150 230 q30 -50 60 0" fill="none" stroke="#1E2A44" stroke-width="4"/>
+    <path d="M290 230 q30 -50 60 0" fill="none" stroke="#1E2A44" stroke-width="4"/>
+    <text x="560" y="300" text-anchor="middle" font-size="30" fill="#1E2A44" font-weight="600">Colour the</text>
+    <text x="560" y="345" text-anchor="middle" font-size="34" fill="#F4A623">Big Five!</text>
+    <text x="400" y="500" text-anchor="middle" font-size="22" fill="#FF6B4A">☀ jua.co.ke</text>
+  </g>
+</svg>

@@ -1,0 +1,21 @@
+{
+  "name": "jua",
+  "version": "1.0.0",
+  "description": "Angaza — bright, CBC-aligned printable & digital learning for Kenyan kids. M-Pesa checkout, WhatsApp delivery. Deploys to Vercel.",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node --watch server/server.js"
+  },
+  "keywords": ["cbc", "kenya", "education", "m-pesa", "whatsapp", "vercel"],
+  "license": "MIT",
+  "dependencies": {
+    "@vercel/blob": "^0.23.4",
+    "@vercel/kv": "^2.0.0",
+    "axios": "^1.7.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1"
+  }
+}

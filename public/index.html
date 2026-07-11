@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Angaza | Bright Minds. Brighter Futures.</title>
+<meta name="description" content="Angaza provides engaging learning activities that help children learn, explore, and grow. Pay with M-Pesa, receive on WhatsApp." />
+<meta name="theme-color" content="#17324D" />
+<meta property="og:title" content="Angaza | Bright Minds. Brighter Futures." />
+<meta property="og:description" content="Engaging learning activities that help children learn, explore, and grow." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="assets/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Angaza | Bright Minds. Brighter Futures." />
+<meta name="twitter:image" content="assets/og-image.png" />
+<link rel="icon" href="favicon.ico" sizes="any" />
+<link rel="icon" href="assets/angaza-icon.png" type="image/png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css?v=9" />
+</head>
+<body>
+
+<!-- ========================================================== ICON SPRITE -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <g id="i-stroke" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></g>
+  </defs>
+  <symbol id="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="4.2" x2="6" y2="6"/><line x1="18" y1="18" x2="19.8" y2="19.8"/><line x1="19.8" y1="4.2" x2="18" y2="6"/><line x1="6" y1="18" x2="4.2" y2="19.8"/></g></symbol>
+  <symbol id="ic-cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.4 12.4a1.5 1.5 0 0 0 1.5 1.2h8.5a1.5 1.5 0 0 0 1.5-1.2L21 8H6"/><circle cx="9.5" cy="20.5" r="1.4"/><circle cx="17.5" cy="20.5" r="1.4"/></symbol>
+  <symbol id="ic-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></symbol>
+  <symbol id="ic-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.2" y1="16.2" x2="21" y2="21"/></symbol>
+  <symbol id="ic-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></symbol>
+  <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 6.5"/></symbol>
+  <symbol id="ic-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5l7 3v5.5c0 4.4-3 7.9-7 10.5-4-2.6-7-6.1-7-10.5V5.5z"/><path d="M9 12l2 2 4-4" stroke-linecap="round"/></symbol>
+  <symbol id="ic-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.6 4.7-1.2A10 10 0 1 0 12 2zm0 2a8 8 0 0 1 6.8 12.2l-.3.5.6 2.2-2.3-.6-.5.3A8 8 0 1 1 12 4zm-3.4 4.3c-.2 0-.5 0-.7.3-.3.3-1 1-1 2.3s1 2.7 1.2 2.9c.1.2 2 3.1 4.9 4.2 2.4.9 2.9.8 3.4.7.5 0 1.6-.6 1.8-1.3.2-.6.2-1.2.2-1.3-.1-.1-.3-.2-.6-.4l-1.8-.9c-.2-.1-.4-.1-.6.1l-.8 1c-.2.2-.3.2-.6.1a6.6 6.6 0 0 1-2-1.2 7.3 7.3 0 0 1-1.3-1.7c-.1-.2 0-.4.1-.5l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5l-.9-2c-.2-.5-.4-.4-.6-.4z"/></symbol>
+  <symbol id="ic-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 5.5C10 4 6.5 4 4 5v13c2.5-1 6-1 8 .5 2-1.5 5.5-1.5 8-.5V5c-2.5-1-6-1-8 .5z"/><line x1="12" y1="5.5" x2="12" y2="19" stroke-linecap="round"/></symbol>
+  <symbol id="ic-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M16.5 3.5l4 4L8 20l-5 1 1-5z"/><line x1="14.5" y1="5.5" x2="18.5" y2="9.5" stroke-linecap="round"/></symbol>
+  <symbol id="ic-palette" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-1 2-2 0-1.4 1-2 2-2h1.5A3.5 3.5 0 0 0 21 11.5 8.5 8.5 0 0 0 12 3z"/><circle cx="7.5" cy="11" r="1.1" fill="currentColor"/><circle cx="10.5" cy="7.5" r="1.1" fill="currentColor"/><circle cx="15" cy="8" r="1.1" fill="currentColor"/></symbol>
+  <symbol id="ic-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20c0-8 5-14 16-15C19 14 13 20 4 20z"/><path d="M4 20c3-5 6-7 11-8"/></symbol>
+  <symbol id="ic-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20S4 14.5 4 9a4 4 0 0 1 8-1 4 4 0 0 1 8 1c0 5.5-8 11-8 11z"/></symbol>
+  <symbol id="ic-hands" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="3"/><path d="M5 21v-1a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v1"/></symbol>
+  <symbol id="ic-numbers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 8h1v4M15 8.5a1.5 1.5 0 1 1 1 2.6c-.6.4-1 .5-1 1.4h2.2"/></symbol>
+  <symbol id="ic-sprout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-8"/><path d="M12 13C12 9 9 6.5 5 6.5c0 4 2.5 6.5 7 6.5z"/><path d="M12 11c0-3.3 2.7-5.5 6.5-5.5C18.5 9 16 11 12 11z"/></symbol>
+  <symbol id="ic-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><path d="M13 6l6 6-6 6"/></symbol>
+  <symbol id="ic-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><line x1="10.5" y1="18.5" x2="13.5" y2="18.5" stroke-linecap="round"/></symbol>
+  <symbol id="ic-printer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 8V3h10v5"/><rect x="4" y="8" width="16" height="8" rx="2"/><path d="M7 16h10v5H7z"/></symbol>
+  <symbol id="ic-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18"/></symbol>
+  <symbol id="ic-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M4 20h16"/></symbol>
+  <symbol id="ic-story" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 4h9a3 3 0 0 1 3 3v13a3 3 0 0 0-3-3H4z"/><path d="M20 4h-3a3 3 0 0 0-3 3v13a3 3 0 0 1 3-3h3z"/></symbol>
+  <symbol id="ic-audio" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></symbol>
+  <symbol id="ic-diy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M8 7.5L20 18M8 16.5L20 6"/></symbol>
+  <symbol id="ic-flash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="6" width="13" height="14" rx="2"/><path d="M8 4h11a2 2 0 0 1 2 2v11" stroke-linecap="round"/></symbol>
+  <symbol id="ic-zoom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.2" y1="16.2" x2="21" y2="21"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></symbol>
+  <symbol id="ic-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.6 1.1 6.45L12 17.9 6.2 20.95l1.1-6.45-4.7-4.6 6.5-.95z"/></symbol>
+  <symbol id="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="ic-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="ic-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="ic-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4V5z"/></symbol>
+  <symbol id="ic-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"/><path d="M16 4.2a3.2 3.2 0 0 1 0 6.2"/><path d="M18.5 14.3A5 5 0 0 1 21 19v1"/></symbol>
+  <symbol id="ic-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></symbol>
+  <symbol id="ic-blocks" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="7" height="7" rx="1.3"/><rect x="14" y="13" width="7" height="7" rx="1.3"/><rect x="8.5" y="4" width="7" height="7" rx="1.3"/></symbol>
+  <symbol id="ic-bulb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 2.5a6.5 6.5 0 0 0-4 11.6c.7.6 1.2 1.5 1.3 2.4h5.4c.1-.9.6-1.8 1.3-2.4A6.5 6.5 0 0 0 12 2.5Z"/></symbol>
+  <symbol id="ic-rocket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c2.6 2 4.3 5.4 4.3 8.9 0 2-.8 3.9-2 5.3L12 19.5l-2.3-2.3c-1.2-1.4-2-3.3-2-5.3C7.7 8.4 9.4 5 12 3Z"/><circle cx="12" cy="10.2" r="1.8"/><path d="M9 16.3c-1.7.2-2.8 1.2-3.1 3.1 1.9.3 2.9-.8 3.1-3.1Z"/><path d="M15 16.3c1.7.2 2.8 1.2 3.1 3.1-1.9.3-2.9-.8-3.1-3.1Z"/></symbol>
+</svg>
+
+<!-- ========================================================== HEADER -->
+<header>
+  <div class="container">
+    <a class="brand" href="#top" aria-label="Angaza home">
+      <img class="brand-mark" src="assets/angaza-icon.png" alt="" width="44" height="32" />
+      <span class="brand-copy">
+        <span class="brand-word">Angaza</span>
+        <span class="brand-tagline">Bright Minds. Brighter Futures.</span>
+      </span>
+    </a>
+
+    <nav class="primary" aria-label="Primary">
+      <a href="#top">Home</a>
+      <a href="#shop">Shop</a>
+      <a href="#how">How It Works</a>
+      <a href="#about">About Us</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="icon-only-btn" id="openSearch" aria-label="Search activities">
+        <svg class="icon" aria-hidden="true"><use href="#ic-search"/></svg>
+      </button>
+      <button class="icon-only-btn cart-icon-btn" id="openCart" aria-label="Open cart">
+        <svg class="icon" aria-hidden="true"><use href="#ic-cart"/></svg>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+      <a href="#shop" class="btn btn-primary btn-browse">Browse Activities</a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+        <svg class="icon" style="width:26px;height:26px" aria-hidden="true"><use href="#ic-menu"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="mobile-nav" id="mobileNav" aria-label="Mobile">
+  <a href="#top">Home</a>
+  <a href="#shop">Shop</a>
+  <a href="#how">How It Works</a>
+  <a href="#about">About Us</a>
+  <a href="#faq">FAQ</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<main id="top">
+
+<!-- ========================================================== HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-copy">
+      <span class="hero-badge">Learning that inspires</span>
+      <h1>Bright Minds.<br /><span class="accent">Brighter Futures.</span></h1>
+      <p class="lede">Printable learning activities that help children explore, discover and grow with confidence.</p>
+      <div class="hero-cta">
+        <a href="#shop" class="btn btn-primary">Explore Activities <svg class="icon" aria-hidden="true"><use href="#ic-arrow"/></svg></a>
+        <a href="#how" class="btn btn-ghost">How It Works <svg class="icon" aria-hidden="true"><use href="#ic-play"/></svg></a>
+      </div>
+      <div class="hero-trust">
+        <div class="ht"><svg class="icon" aria-hidden="true"><use href="#ic-lock"/></svg><div><b>Secure</b><span>M-Pesa payment</span></div></div>
+        <div class="ht"><svg class="icon" aria-hidden="true"><use href="#ic-chat"/></svg><div><b>Instant</b><span>WhatsApp delivery</span></div></div>
+        <div class="ht"><svg class="icon" aria-hidden="true"><use href="#ic-users"/></svg><div><b>Made for</b><span>Young learners</span></div></div>
+      </div>
+    </div>
+    <div class="hero-art">
+      <div class="hero-blob hero-blob-1" aria-hidden="true"></div>
+      <div class="hero-blob hero-blob-2" aria-hidden="true"></div>
+      <img class="hero-photo" src="assets/Hero.png" alt="Two Angaza students smiling together over a handwriting activity" loading="eager" />
+    </div>
+  </div>
+</section>
+
+<!-- trust strip -->
+<div class="trust">
+  <div class="container">
+    <span><svg class="icon" aria-hidden="true"><use href="#ic-check"/></svg> Every activity mapped to a CBC competency</span>
+    <span><svg class="icon" aria-hidden="true"><use href="#ic-check"/></svg> Instant WhatsApp delivery</span>
+    <span><svg class="icon" aria-hidden="true"><use href="#ic-check"/></svg> Kenyan names, places &amp; stories</span>
+    <span><svg class="icon" aria-hidden="true"><use href="#ic-check"/></svg> Print, watch, listen &amp; make</span>
+  </div>
+</div>
+
+<!-- ========================================================== POPULAR (impulse) -->
+<section class="section popular" id="popular">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow"><svg class="sun-tick" aria-hidden="true"><use href="#ic-star"/></svg> Popular</span>
+      <h2>Popular Learning Activities</h2>
+      <p>Hand-picked activities parents are choosing this week.</p>
+    </div>
+    <div class="product-grid" id="featuredGrid"><!-- rendered by JS --></div>
+    <div style="text-align:center;margin-top:28px">
+      <a href="#shop" class="btn btn-ghost">See all activities <svg class="icon" aria-hidden="true"><use href="#ic-arrow"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================== CATEGORIES -->
+<section class="section categories" id="categories">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow"><svg class="sun-tick" aria-hidden="true"><use href="#ic-star"/></svg> Categories</span>
+      <h2>Explore Learning Categories</h2>
+      <p>Find the right kind of activity for your child in a few taps.</p>
+    </div>
+    <div class="category-grid" id="categoryGrid"><!-- rendered by JS --></div>
+  </div>
+</section>
+
+<!-- ========================================================== BY LEVEL -->
+<section class="section levels" id="levels">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow"><svg class="sun-tick" aria-hidden="true"><use href="#ic-sprout"/></svg> Grows with your child</span>
+      <h2>Pick your child's level</h2>
+      <p>Each stage builds on the last — from first crayon strokes to confident writing.</p>
+    </div>
+    <div class="level-grid" id="levelGrid"><!-- rendered by JS --></div>
+  </div>
+</section>
+
+<!-- ========================================================== SHOP -->
+<section class="section shop" id="shop">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow"><svg class="sun-tick" aria-hidden="true"><use href="#ic-star"/></svg> The shop</span>
+      <h2>Print, play, learn</h2>
+      <p>Search or filter to find the perfect activity, then add it to your cart.</p>
+    </div>
+
+    <div class="shop-controls">
+      <div class="search-row">
+        <label class="search-box">
+          <svg class="icon" aria-hidden="true"><use href="#ic-search"/></svg>
+          <span class="sr-only">Search activities</span>
+          <input type="search" id="search" placeholder="Search activities, e.g. 'counting' or 'story'" />
+        </label>
+        <span class="result-count" id="resultCount">Loading…</span>
+      </div>
+      <div class="chip-row" id="levelChips" role="group" aria-label="Filter by level"></div>
+      <div class="chip-row" id="typeChips" role="group" aria-label="Filter by type"></div>
+    </div>
+
+    <div class="product-grid" id="productGrid"><!-- rendered by JS --></div>
+  </div>
+</section>
+
+<!-- ========================================================== FREE -->
+<section class="section" id="free" style="background:var(--sky)">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow"><svg class="sun-tick" aria-hidden="true"><use href="#ic-star"/></svg> On the house</span>
+      <h2>Free sunshine samples</h2>
+      <p>No payment, no catch. Download, print, and see what your child thinks.</p>
+    </div>
+    <div class="product-grid" id="freeGrid"><!-- rendered by JS --></div>
+  </div>
+</section>
+
+<!-- ========================================================== HOW IT WORKS -->
+<section class="section how" id="how">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow"><svg class="sun-tick" aria-hidden="true"><use href="#ic-star"/></svg> How it works</span>
+      <h2>How Angaza Works</h2>
+      <p>From your phone to your child's hands in minutes.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-icon"><svg class="icon" aria-hidden="true"><use href="#ic-cart"/></svg><span class="num">1</span></div>
+        <h3>Choose</h3>
+        <p>Browse and select activities that match your child's age, level and interests.</p>
+      </div>
+      <div class="step-line"></div>
+      <div class="step">
+        <div class="step-icon"><svg class="icon" aria-hidden="true"><use href="#ic-phone"/></svg><span class="num">2</span></div>
+        <h3>Pay</h3>
+        <p id="step2text">Add to cart and pay securely using M-Pesa in just a few taps.</p>
+      </div>
+      <div class="step-line"></div>
+      <div class="step">
+        <div class="step-icon"><svg class="icon" aria-hidden="true"><use href="#ic-wa"/></svg><span class="num">3</span></div>
+        <h3>Receive</h3>
+        <p>Get your files instantly via WhatsApp and start learning right away.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================== BENEFITS -->
+<section class="section benefits" id="benefits">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Why Angaza</span>
+      <h2>Why parents choose Angaza</h2>
+      <p>Thoughtful learning resources, built for Kenyan families.</p>
+    </div>
+    <div class="benefit-grid">
+      <div class="benefit"><span class="b-icon"><svg class="icon" aria-hidden="true"><use href="#ic-sprout"/></svg></span><h3>Designed for children</h3><p>Age-appropriate activities that build skills step by step.</p></div>
+      <div class="benefit"><span class="b-icon"><svg class="icon" aria-hidden="true"><use href="#ic-wa"/></svg></span><h3>Easy access</h3><p>Instant delivery straight to your WhatsApp.</p></div>
+      <div class="benefit"><span class="b-icon"><svg class="icon" aria-hidden="true"><use href="#ic-heart"/></svg></span><h3>Affordable learning</h3><p>Quality resources priced for everyday families.</p></div>
+      <div class="benefit"><span class="b-icon"><svg class="icon" aria-hidden="true"><use href="#ic-globe"/></svg></span><h3>Kenyan inspired</h3><p>Names, places, and stories made for local learners.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================== ABOUT -->
+<section class="section about" id="about" style="background:var(--sky)">
+  <div class="container about-inner">
+    <div class="about-copy">
+      <span class="eyebrow">About Angaza</span>
+      <h2>Why we started Angaza</h2>
+      <p>In Swahili, <em>angaza</em> means to illuminate — to shine light on something. That's what we set out to do: give Kenyan parents bright, CBC-aligned learning activities their children can hold in their hands, at a price that respects family budgets.</p>
+      <p>Every worksheet, story and flashcard is made with Kenyan names, places and everyday life, because children learn best when what they're reading looks like home.</p>
+    </div>
+    <div class="about-stats">
+      <div class="about-stat"><b id="statCount">0+</b><span>Activities &amp; growing</span></div>
+      <div class="about-stat"><b>PP1–Grade 6</b><span>Every level covered</span></div>
+      <div class="about-stat"><b>M-Pesa</b><span>Simple, local payment</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================== VOICES -->
+<section class="section voices">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow"><svg class="sun-tick" aria-hidden="true"><use href="#ic-star"/></svg> Testimonials</span>
+      <h2>What Parents Say</h2>
+    </div>
+    <div class="voice-grid">
+      <div class="voice">
+        <div class="rays"><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg></div>
+        <blockquote>"My five-year-old keeps asking for 'one more page'. The animal counting sheets are her favourite."</blockquote>
+        <div class="who"><span class="av">GW</span><div><div class="n">Grace Wanjiru</div><div class="r">Mum of a PP2 learner</div></div></div>
+      </div>
+      <div class="voice">
+        <div class="rays"><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg></div>
+        <blockquote>"Finally, resources that actually match the CBC areas. I can see exactly what my son is learning each week."</blockquote>
+        <div class="who"><span class="av">PO</span><div><div class="n">Peter Ochieng</div><div class="r">Dad of a Grade 2 learner</div></div></div>
+      </div>
+      <div class="voice">
+        <div class="rays"><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg></div>
+        <blockquote>"WhatsApp delivery is genius. I paid, the PDF arrived, and I printed it at the cyber down the road."</blockquote>
+        <div class="who"><span class="av">FH</span><div><div class="n">Fatima Hassan</div><div class="r">Mum of PP1 &amp; Grade 1</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================== FAQ -->
+<section class="section faq" id="faq">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Questions</span>
+      <h2>Frequently asked questions</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item"><summary>How do I receive my activities?<svg class="icon chev" aria-hidden="true"><use href="#ic-chevron"/></svg></summary><p>After you pay, your files are sent to the WhatsApp number you enter at checkout. Most orders arrive within minutes.</p></details>
+      <details class="faq-item"><summary>How do I pay?<svg class="icon chev" aria-hidden="true"><use href="#ic-chevron"/></svg></summary><p>Pay securely with M-Pesa. Send Money to the number shown at checkout, paste your confirmation code, and we do the rest.</p></details>
+      <details class="faq-item"><summary>Can I print the activities at home?<svg class="icon chev" aria-hidden="true"><use href="#ic-chevron"/></svg></summary><p>Yes. Every printable is A4-ready, so you can print at home or at any nearby cyber café.</p></details>
+      <details class="faq-item"><summary>What ages are the activities for?<svg class="icon chev" aria-hidden="true"><use href="#ic-chevron"/></svg></summary><p>Angaza covers Pre-Primary through upper primary, organised by level so you can pick what fits your child.</p></details>
+      <details class="faq-item"><summary>Do you have free samples?<svg class="icon chev" aria-hidden="true"><use href="#ic-chevron"/></svg></summary><p>Yes — look for the free samples in the shop. Download, print, and try them with no payment needed.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================== CONTACT -->
+<section class="section contact" id="contact">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Get in touch</span>
+      <h2>We'd love to hear from you</h2>
+      <p>Questions about an order, a school partnership, or just want to say hi?</p>
+    </div>
+    <div class="contact-grid">
+      <a class="contact-card" href="mailto:hello@angaza.co.ke">
+        <svg class="icon" aria-hidden="true"><use href="#ic-chat"/></svg>
+        <h3>Email</h3><span>hello@angaza.co.ke</span>
+      </a>
+      <a class="contact-card" href="https://wa.me/254748519923" target="_blank" rel="noopener">
+        <svg class="icon" aria-hidden="true"><use href="#ic-wa"/></svg>
+        <h3>WhatsApp</h3><span>+254 748 519 923</span>
+      </a>
+      <div class="contact-card">
+        <svg class="icon" aria-hidden="true"><use href="#ic-globe"/></svg>
+        <h3>Location</h3><span>Nairobi, Kenya · Mon–Sat, 8am–6pm</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================== CTA BAND -->
+<section class="band">
+  <div class="container inner">
+    <span class="band-sun" aria-hidden="true"></span>
+    <h2>Ready to help your child shine?</h2>
+    <p>Start with a free sample, then explore the full collection.</p>
+    <a href="#shop" class="btn btn-primary">Explore Angaza Activities <svg class="icon" aria-hidden="true"><use href="#ic-arrow"/></svg></a>
+  </div>
+</section>
+
+</main>
+
+<!-- ========================================================== FOOTER -->
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="brand" href="#top" aria-label="Angaza home">
+          <span class="brand-word" style="color:#fff">Angaza</span>
+        </a>
+        <p class="foot-tag">Bright Minds. Brighter Futures.</p>
+        <p>Engaging learning activities that help children learn, explore, and grow.</p>
+        <div class="foot-social">
+          <a href="#" aria-label="Instagram"><svg class="icon" aria-hidden="true"><use href="#ic-globe"/></svg></a>
+          <a href="#" aria-label="Facebook"><svg class="icon" aria-hidden="true"><use href="#ic-book"/></svg></a>
+          <a href="#" aria-label="WhatsApp"><svg class="icon" aria-hidden="true"><use href="#ic-wa"/></svg></a>
+        </div>
+      </div>
+      <div class="col"><h4>Explore</h4><a href="#shop">Shop</a><a href="#categories">Categories</a><a href="#how">How It Works</a><a href="#faq">FAQ</a></div>
+      <div class="col"><h4>Activities</h4><a href="#shop">Workbooks</a><a href="#shop">Worksheets</a><a href="#shop">Flashcards &amp; posters</a><a href="#shop">Audio &amp; DIY</a></div>
+      <div class="col"><h4>Contact</h4><p>hello@angaza.co.ke</p><p>+254 748 519 923</p><p>Nairobi, Kenya</p><p>Mon–Sat · 8am–6pm</p></div>
+    </div>
+    <div class="foot-bottom">
+      <p>&copy; 2026 Angaza Learning Platform. All Rights Reserved.</p>
+      <p class="dev-credit">Developed by <b>SA Technologies</b> · Building intelligent digital platforms.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ========================================================== WHATSAPP FLOAT -->
+<div class="wa-float">
+  <a href="https://wa.me/254748519923?text=Habari%20Angaza!%20I'd%20like%20to%20know%20more%20about%20your%20activities." target="_blank" rel="noopener">
+    <svg class="icon" aria-hidden="true"><use href="#ic-wa"/></svg> Chat with us
+  </a>
+</div>
+
+<!-- ========================================================== CART DRAWER -->
+<div class="overlay right" id="cartOverlay" role="dialog" aria-modal="true" aria-label="Your cart">
+  <aside class="drawer">
+    <div class="drawer-head">
+      <h2>Your cart</h2>
+      <button class="icon-btn" data-close aria-label="Close cart"><svg class="icon" aria-hidden="true"><use href="#ic-close"/></svg></button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-foot" id="cartFoot" hidden>
+      <div class="cart-total"><span class="l">Total</span><span class="v" id="cartTotal">KES 0</span></div>
+      <button class="btn btn-primary" id="checkoutBtn">Checkout <svg class="icon" aria-hidden="true"><use href="#ic-arrow"/></svg></button>
+    </div>
+  </aside>
+</div>
+
+<!-- ========================================================== CHECKOUT / SUCCESS MODAL -->
+<div class="overlay center" id="modalOverlay" role="dialog" aria-modal="true" aria-label="Checkout">
+  <div class="modal" id="modalCard"></div>
+</div>
+
+<!-- ========================================================== PREVIEW LIGHTBOX -->
+<div class="overlay center" id="previewOverlay" role="dialog" aria-modal="true" aria-label="Activity preview">
+  <div class="lightbox" id="previewCard"></div>
+</div>
+
+<!-- toast -->
+<div class="toast" id="toast" role="status" aria-live="polite"><svg class="icon" aria-hidden="true"><use href="#ic-check"/></svg><span id="toastMsg"></span></div>
+
+<script src="config.js"></script>
+<script src="js/app.js?v=3"></script>
+</body>
+</html>
