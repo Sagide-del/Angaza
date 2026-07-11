@@ -108,6 +108,16 @@ function renderLevels() {
   }));
 }
 
+/* ---------------------------------------------------------- browse tabs */
+$$('.browse-tab').forEach(t => t.addEventListener('click', () => {
+  $$('.browse-tab').forEach(x => { x.classList.remove('active'); x.setAttribute('aria-selected', 'false'); });
+  t.classList.add('active');
+  t.setAttribute('aria-selected', 'true');
+  const panel = t.dataset.panel;
+  $('#categoryGrid').hidden = panel !== 'category';
+  $('#levelGrid').hidden = panel !== 'level';
+}));
+
 /* ---------------------------------------------------------- filters */
 function renderFilters() {
   const lvl = ['all', ...LEVELS.map(l => l.id)];
@@ -140,6 +150,22 @@ function setType(id) {
 }
 
 $('#search').addEventListener('input', (e) => { state.query = e.target.value.trim().toLowerCase(); renderProducts(); });
+
+/* ---------------------------------------------------------- header shop dropdown */
+function jumpToShop() {
+  document.getElementById('shop').scrollIntoView({ behavior: 'smooth' });
+}
+$$('[data-nav-cat]').forEach(a => a.addEventListener('click', (e) => {
+  e.preventDefault();
+  setType(a.dataset.navCat);
+  setLevel('all');
+  jumpToShop();
+}));
+$$('[data-nav-level]').forEach(a => a.addEventListener('click', (e) => {
+  e.preventDefault();
+  setLevel(a.dataset.navLevel);
+  jumpToShop();
+}));
 
 /* ---------------------------------------------------------- product cards */
 function coverGradient(type) {

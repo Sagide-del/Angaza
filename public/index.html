@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css?v=9" />
+<link rel="stylesheet" href="css/style.css?v=10" />
 </head>
 <body>
 
@@ -81,7 +81,38 @@
 
     <nav class="primary" aria-label="Primary">
       <a href="#top">Home</a>
-      <a href="#shop">Shop</a>
+      <div class="nav-item">
+        <a href="#shop" class="nav-shop-trigger">Shop <svg class="icon chev" aria-hidden="true"><use href="#ic-chevron"/></svg></a>
+        <div class="nav-dropdown" id="navDropdown">
+          <div class="nd-col">
+            <h4>Shop by category</h4>
+            <a data-nav-cat="workbook">Workbooks</a>
+            <a data-nav-cat="worksheet">Worksheets</a>
+            <a data-nav-cat="coloring">Colouring</a>
+            <a data-nav-cat="story">Stories</a>
+            <a data-nav-cat="flashcards">Flashcards</a>
+            <a data-nav-cat="poster">Posters</a>
+            <a data-nav-cat="diy">DIY Packages</a>
+          </div>
+          <div class="nd-col">
+            <h4>Shop by level</h4>
+            <a data-nav-level="pp1">Pre-Primary 1</a>
+            <a data-nav-level="pp2">Pre-Primary 2</a>
+            <a data-nav-level="grade1">Grade 1</a>
+            <a data-nav-level="grade2">Grade 2</a>
+            <a data-nav-level="grade3">Grade 3</a>
+            <a data-nav-level="grade4">Grade 4</a>
+            <a data-nav-level="grade5">Grade 5</a>
+            <a data-nav-level="grade6">Grade 6</a>
+          </div>
+          <div class="nd-col nd-highlight">
+            <h4>Quick links</h4>
+            <a href="#free">Free samples</a>
+            <a href="#browse">Browse all categories</a>
+            <a href="#shop" class="nd-cta">See everything <svg class="icon" aria-hidden="true"><use href="#ic-arrow"/></svg></a>
+          </div>
+        </div>
+      </div>
       <a href="#how">How It Works</a>
       <a href="#about">About Us</a>
       <a href="#faq">FAQ</a>
@@ -165,27 +196,20 @@
   </div>
 </section>
 
-<!-- ========================================================== CATEGORIES -->
-<section class="section categories" id="categories">
+<!-- ========================================================== BROWSE (categories + levels, tabbed) -->
+<section class="section browse" id="browse">
   <div class="container">
     <div class="section-head">
-      <span class="eyebrow"><svg class="sun-tick" aria-hidden="true"><use href="#ic-star"/></svg> Categories</span>
-      <h2>Explore Learning Categories</h2>
-      <p>Find the right kind of activity for your child in a few taps.</p>
+      <span class="eyebrow"><svg class="sun-tick" aria-hidden="true"><use href="#ic-star"/></svg> Find it fast</span>
+      <h2>Browse Angaza in a few taps</h2>
+      <p>Jump straight to what your child needs — by category or by level.</p>
     </div>
-    <div class="category-grid" id="categoryGrid"><!-- rendered by JS --></div>
-  </div>
-</section>
-
-<!-- ========================================================== BY LEVEL -->
-<section class="section levels" id="levels">
-  <div class="container">
-    <div class="section-head">
-      <span class="eyebrow"><svg class="sun-tick" aria-hidden="true"><use href="#ic-sprout"/></svg> Grows with your child</span>
-      <h2>Pick your child's level</h2>
-      <p>Each stage builds on the last — from first crayon strokes to confident writing.</p>
+    <div class="browse-tabs" role="tablist" aria-label="Browse by">
+      <button class="browse-tab active" data-panel="category" role="tab" aria-selected="true">By category</button>
+      <button class="browse-tab" data-panel="level" role="tab" aria-selected="false">By level</button>
     </div>
-    <div class="level-grid" id="levelGrid"><!-- rendered by JS --></div>
+    <div class="category-grid" id="categoryGrid" data-panel="category"><!-- rendered by JS --></div>
+    <div class="level-grid" id="levelGrid" data-panel="level" hidden><!-- rendered by JS --></div>
   </div>
 </section>
 
@@ -388,7 +412,7 @@
           <a href="#" aria-label="WhatsApp"><svg class="icon" aria-hidden="true"><use href="#ic-wa"/></svg></a>
         </div>
       </div>
-      <div class="col"><h4>Explore</h4><a href="#shop">Shop</a><a href="#categories">Categories</a><a href="#how">How It Works</a><a href="#faq">FAQ</a></div>
+      <div class="col"><h4>Explore</h4><a href="#shop">Shop</a><a href="#browse">Categories</a><a href="#how">How It Works</a><a href="#faq">FAQ</a></div>
       <div class="col"><h4>Activities</h4><a href="#shop">Workbooks</a><a href="#shop">Worksheets</a><a href="#shop">Flashcards &amp; posters</a><a href="#shop">Audio &amp; DIY</a></div>
       <div class="col"><h4>Contact</h4><p>hello@angaza.co.ke</p><p>+254 748 519 923</p><p>Nairobi, Kenya</p><p>Mon–Sat · 8am–6pm</p></div>
     </div>
@@ -435,6 +459,6 @@
 <div class="toast" id="toast" role="status" aria-live="polite"><svg class="icon" aria-hidden="true"><use href="#ic-check"/></svg><span id="toastMsg"></span></div>
 
 <script src="config.js"></script>
-<script src="js/app.js?v=3"></script>
+<script src="js/app.js?v=4"></script>
 </body>
 </html>
