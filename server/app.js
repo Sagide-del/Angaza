@@ -30,8 +30,8 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB (covers audio & DIY zips)
   fileFilter: (_req, file, cb) => {
-    const ok = /pdf|image\/|audio\/|zip/.test(file.mimetype);
-    cb(ok ? null : new Error('Allowed files: PDF, image, audio, or a ZIP for DIY kits.'), ok);
+    const ok = /pdf|image\/|audio\/|zip|word|msword/.test(file.mimetype);
+    cb(ok ? null : new Error('Allowed files: PDF, Word document, image, audio, or a ZIP for DIY kits.'), ok);
   },
 });
 

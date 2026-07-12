@@ -17,7 +17,7 @@ const TYPES = [
   ['story','Story','ic-story','#7A5CD0'],
   ['flashcards','Flashcards','ic-flash','#12A5A0'],
   ['poster','Poster','ic-globe','#E5397E'],
-  ['revision','Exams & Assessment','ic-quiz','#E67E22'],
+  ['revision','Angaza Series','ic-quiz','#E67E22'],
   ['audio','Audio lesson','ic-audio','#3A7BD5'],
   ['diy','DIY Package (legacy)','ic-diy','#E67E22'],
 ];
@@ -273,6 +273,8 @@ $('#bGrade').innerHTML = LEVELS.map(([v,l]) => `<option value="${v}">${l}</optio
 $('#bType').innerHTML = TYPES.map(([v,l]) => `<option value="${v}">${l}</option>`).join('');
 
 $('#fFree').addEventListener('change', (e) => { $('#priceRow').style.display = e.target.checked ? 'none' : 'grid'; });
+$('#fType').addEventListener('change', (e) => { if (e.target.value === 'revision') $('#fPrice').value = 100; });
+$('#bType').addEventListener('change', (e) => { if (e.target.value === 'revision') $('#bPrice').value = 100; });
 $('#fFile').addEventListener('change', async (e) => {
   const f = e.target.files[0];
   $('#dropText').innerHTML = f ? `<span class="name">${f.name}</span>` : 'Tap to choose the activity file';

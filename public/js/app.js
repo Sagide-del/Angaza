@@ -26,11 +26,12 @@ const TYPES = [
   { id: 'story',      label: 'Stories',             icon: 'ic-story',   color: '#7A5CD0', priceRange: 'KES 100–250' },
   { id: 'flashcards', label: 'Flashcards',          icon: 'ic-flash',   color: '#12A5A0', priceRange: 'KES 80–200' },
   { id: 'poster',     label: 'Posters',             icon: 'ic-globe',   color: '#E5397E', priceRange: 'KES 120–300' },
-  { id: 'revision',   label: 'Exams & Assessment',  icon: 'ic-quiz',    color: '#E67E22', priceRange: 'KES 50–200' },
+  { id: 'revision',   label: 'Angaza Series',       icon: 'ic-quiz',    color: '#E67E22', priceRange: 'KES 100' },
 ];
 
 const FORMATS = {
   pdf:   { label: 'PDF',   icon: 'ic-printer' },
+  word:  { label: 'Word',  icon: 'ic-pencil' },
   image: { label: 'Image', icon: 'ic-globe' },
   audio: { label: 'Audio', icon: 'ic-audio' },
   diy:   { label: 'DIY',   icon: 'ic-diy' },
@@ -39,7 +40,7 @@ const FORMATS = {
 
 const QUICK_FILTERS = [
   { key: 'onlyFeatured', label: 'Popular' },
-  { key: 'onlyRevision', label: 'Exams & Assessment' },
+  { key: 'onlyRevision', label: 'Angaza Series' },
 ];
 
 const COMING_SOON = [
@@ -186,6 +187,31 @@ function cardHTML(p) {
     </article>`;
 }
 
+/* ---------------------------------------------------------- Angaza Series (grouped by grade, for schools) */
+function seriesNoteHTML() {
+  const msg = encodeURIComponent("Habari Angaza! I'm ordering the Angaza Series for my school and would like bulk pricing.");
+  return `
+    <div class="series-note">
+      <svg class="icon" aria-hidden="true"><use href="#ic-quiz"/></svg>
+      <p><strong>Angaza Series</strong> — CBC exam &amp; assessment papers, arranged by grade. KES 100 per paper, available as PDF or Word. Ordering for a school? <a href="https://wa.me/${WHATSAPP}?text=${msg}" target="_blank" rel="noopener">Chat with us for bulk pricing</a>.</p>
+    </div>`;
+}
+
+function renderGroupedByGrade(list) {
+  const groups = {};
+  list.forEach(p => { (groups[p.grade] = groups[p.grade] || []).push(p); });
+  const order = [...LEVELS.map(l => l.id), 'all'];
+  return order.filter(id => groups[id] && groups[id].length).map(id => {
+    const label = id === 'all' ? 'All Grades' : gradeLabel(id);
+    const items = groups[id];
+    return `
+      <div class="grade-group">
+        <h3 class="grade-group-title">${label} <span class="grade-group-count">${items.length}</span></h3>
+        <div class="product-grid grade-group-grid">${items.map(cardHTML).join('')}</div>
+      </div>`;
+  }).join('');
+}
+
 /* ---------------------------------------------------------- unified catalogue */
 function renderCatalog() {
   const grid = $('#productGrid');
@@ -219,9 +245,12 @@ function renderCatalog() {
 
   const shown = list.slice(0, state.visibleCount);
   const more = list.length - shown.length;
+  const isAngazaSeries = state.type === 'revision' || state.onlyRevision;
+  const loadMoreHTML = more > 0
+    ? `<div class="load-more"><button class="btn btn-ghost" id="loadMoreBtn" type="button">Show ${Math.min(more, PAGE_SIZE)} more</button></div>` : '';
 
-  grid.innerHTML = shown.map(cardHTML).join('') +
-    (more > 0 ? `<div class="load-more"><button class="btn btn-ghost" id="loadMoreBtn" type="button">Show ${Math.min(more, PAGE_SIZE)} more</button></div>` : '');
+  grid.innerHTML = (isAngazaSeries ? seriesNoteHTML() + renderGroupedByGrade(shown) : shown.map(cardHTML).join(''))
+    + loadMoreHTML;
 
   if (more > 0) {
     $('#loadMoreBtn').addEventListener('click', () => {

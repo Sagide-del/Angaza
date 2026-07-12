@@ -222,6 +222,30 @@ img, svg { max-width: 100%; display: block; }
 
 .empty .btn { margin-top: 18px; }
 
+/* Angaza Series — grade-grouped view + schools callout */
+.series-note {
+    grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 12px;
+    background: var(--sky); border: 1px solid #EFE0AE; border-radius: var(--r-md);
+    padding: 16px 18px; margin-bottom: 8px;
+}
+.series-note .icon { width: 22px; height: 22px; color: var(--coral); flex: none; margin-top: 2px; }
+.series-note p { font-size: 14px; color: var(--text); line-height: 1.55; }
+.series-note strong { color: var(--ink); }
+.series-note a { color: var(--ink); font-weight: 800; text-decoration: underline; text-decoration-color: var(--saffron); text-underline-offset: 3px; }
+
+.grade-group { grid-column: 1 / -1; padding-top: 28px; }
+.grade-group:first-of-type { padding-top: 8px; }
+.grade-group-title {
+    font-family: var(--display); font-weight: 800; font-size: 17px; color: var(--ink);
+    display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+    padding-bottom: 10px; border-bottom: 2px solid var(--saffron-soft);
+}
+.grade-group-count {
+    font-family: var(--body); font-size: 11.5px; font-weight: 800; color: var(--muted);
+    background: #fff; padding: 3px 10px; border-radius: var(--r-pill);
+}
+.grade-group-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); gap: 24px; }
+
 /* format badge on product covers */
 .card .format {
   position: absolute; bottom: 12px; right: 12px; display: inline-flex; align-items: center; gap: 5px;
