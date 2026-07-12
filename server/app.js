@@ -8,9 +8,14 @@ const path = require('path');
 const multer = require('multer');
 
 const store = require('../lib/store');
-const { saveFile, formatFor } = require('../lib/blob');
+const { saveFile, formatFor, createSignedUpload, useSupabase } = require('../lib/blob');
 const { stkPush, isConfigured } = require('../lib/mpesa');
 const { sendWhatsApp, sendDocument } = require('../lib/whatsapp');
+
+// Pull the useful bit out of an axios/network error instead of the generic
+// "Request failed with status code 400" message, so failures are debuggable.
+const describeError = (e) => e?.response?.data?.message || e?.response?.data?.error
+  || (typeof e?.response?.data === 'string' ? e.response.data : null) || e?.message || 'Something went wrong.';
 
 const app = express();
 const ADMIN_KEY = process.env.ADMIN_KEY || 'change-me';
@@ -32,6 +37,18 @@ const upload = multer({
 
 const slug = (s) => String(s).toLowerCase().trim()
   .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+
+const niceTitleFromFilename = (filename, prefix = '') => {
+  const base = String(filename).replace(/\.[^./]+$/, '').replace(/[-_]+/g, ' ').trim();
+  const cased = base.replace(/\w\S*/g, (w) => w[0].toUpperCase() + w.slice(1).toLowerCase());
+  return prefix ? `${prefix} ${cased}` : cased;
+};
+function makeUniqueId(title, existing, extra = []) {
+  let id = slug(title) || 'activity';
+  let n = 2;
+  while (existing.some(x => x.id === id) || extra.some(x => x.id === id)) id = `${slug(title) || 'activity'}-${n++}`;
+  return id;
+}
 
 function requireAdmin(req, res, next) {
   if (req.headers['x-admin-key'] !== ADMIN_KEY) return res.status(401).json({ error: 'Wrong admin key.' });
@@ -208,6 +225,10 @@ const uploadMany = upload.array('files', 30);
 
 // Bulk-create one product per uploaded file, sharing the same grade/type/price/etc.
 // Titles are auto-derived from each filename (optionally prefixed) — rename individually afterwards if needed.
+// NOTE: this route proxies file bytes through our own server/Vercel function, which caps
+// request bodies at 4.5MB — fine for local dev or a couple of small files, but several
+// images/PDFs together will blow past that. On Vercel with Supabase configured, the admin
+// UI uses the sign/finalize routes below instead (direct browser -> Supabase upload).
 app.post('/api/admin/products/bulk', requireAdmin, uploadMany, async (req, res) => {
   try {
     const incoming = req.files || [];
@@ -225,22 +246,10 @@ app.post('/api/admin/products/bulk', requireAdmin, uploadMany, async (req, res) 
     const created = [];
     const failed = [];
 
-    const niceTitle = (filename) => {
-      const base = filename.replace(/\.[^./]+$/, '').replace(/[-_]+/g, ' ').trim();
-      const cased = base.replace(/\w\S*/g, (w) => w[0].toUpperCase() + w.slice(1).toLowerCase());
-      return prefix ? `${prefix} ${cased}` : cased;
-    };
-    const uniqueId = (title) => {
-      let id = slug(title) || 'activity';
-      let n = 2;
-      while (products.some(x => x.id === id) || created.some(x => x.id === id)) id = `${slug(title) || 'activity'}-${n++}`;
-      return id;
-    };
-
     for (const file of incoming) {
       try {
-        const title = niceTitle(file.originalname);
-        const id = uniqueId(title);
+        const title = niceTitleFromFilename(file.originalname, prefix);
+        const id = makeUniqueId(title, products, created);
         const fileUrl = await saveFile(file.originalname, file.buffer, file.mimetype);
         const format = formatFor(file.mimetype);
         created.push({
@@ -249,13 +258,66 @@ app.post('/api/admin/products/bulk', requireAdmin, uploadMany, async (req, res) 
           createdAt: new Date().toISOString(),
         });
       } catch (e) {
-        failed.push({ name: file.originalname, error: e.message });
+        failed.push({ name: file.originalname, error: describeError(e) });
       }
     }
 
     if (created.length) await store.setProducts([...products, ...created]);
     res.json({ success: true, created, failed });
-  } catch (e) { res.status(400).json({ error: e.message }); }
+  } catch (e) { res.status(400).json({ error: describeError(e) }); }
+});
+
+// Step 1 of the direct-to-Supabase bulk flow: hand back a short-lived signed
+// upload URL per file. Tiny JSON request/response — never touches file bytes,
+// so it's unaffected by the 4.5MB serverless body limit.
+app.post('/api/admin/uploads/sign', requireAdmin, async (req, res) => {
+  if (!useSupabase) return res.status(501).json({ error: 'Direct upload needs Supabase Storage configured.' });
+  try {
+    const files = Array.isArray(req.body?.files) ? req.body.files : [];
+    if (!files.length) return res.status(400).json({ error: 'No files listed.' });
+    const signed = [];
+    for (const f of files) {
+      try {
+        const s = await createSignedUpload(f.name || 'file');
+        signed.push({ name: f.name, ok: true, uploadUrl: s.uploadUrl, publicUrl: s.publicUrl, contentType: f.type || 'application/octet-stream' });
+      } catch (e) {
+        signed.push({ name: f.name, ok: false, error: describeError(e) });
+      }
+    }
+    res.json({ success: true, signed });
+  } catch (e) { res.status(400).json({ error: describeError(e) }); }
+});
+
+// Step 2: once the browser has PUT each file straight to Supabase using the
+// signed URLs above, register the resulting products. Pure JSON, no file bytes.
+app.post('/api/admin/products/bulk-finalize', requireAdmin, async (req, res) => {
+  try {
+    const body = req.body || {};
+    const items = Array.isArray(body.items) ? body.items : [];
+    if (!items.length) return res.status(400).json({ error: 'Nothing to save.' });
+
+    const isFree = body.isFree === true || body.isFree === 'true';
+    const featured = body.featured === true || body.featured === 'true';
+    const price = isFree ? 0 : Number(body.price || 0);
+    const grade = body.grade || 'all';
+    const type = body.type || 'worksheet';
+    const prefix = (body.titlePrefix || '').trim();
+
+    const products = await store.getProducts();
+    const created = [];
+    for (const item of items) {
+      const title = niceTitleFromFilename(item.name, prefix);
+      const id = makeUniqueId(title, products, created);
+      const format = formatFor(item.contentType || '');
+      created.push({
+        id, title, description: '', grade, type, isFree, featured, price,
+        format, fileUrl: item.publicUrl, preview: format === 'image' ? item.publicUrl : null,
+        createdAt: new Date().toISOString(),
+      });
+    }
+    await store.setProducts([...products, ...created]);
+    res.json({ success: true, created });
+  } catch (e) { res.status(400).json({ error: describeError(e) }); }
 });
 
 app.post('/api/admin/products', requireAdmin, uploadFields, async (req, res) => {
@@ -272,7 +334,7 @@ app.post('/api/admin/products', requireAdmin, uploadFields, async (req, res) => 
     products.push(p);
     await store.setProducts(products);
     res.json({ success: true, product: p });
-  } catch (e) { res.status(400).json({ error: e.message }); }
+  } catch (e) { res.status(400).json({ error: describeError(e) }); }
 });
 
 app.put('/api/admin/products/:id', requireAdmin, uploadFields, async (req, res) => {
@@ -289,7 +351,7 @@ app.put('/api/admin/products/:id', requireAdmin, uploadFields, async (req, res) 
     products[i] = p;
     await store.setProducts(products);
     res.json({ success: true, product: p });
-  } catch (e) { res.status(400).json({ error: e.message }); }
+  } catch (e) { res.status(400).json({ error: describeError(e) }); }
 });
 
 app.delete('/api/admin/products/:id', requireAdmin, async (req, res) => {

@@ -236,6 +236,11 @@ $('#bFiles').addEventListener('change', (e) => {
   $('#bDropText').innerHTML = n ? `<span class="name">${n} file${n === 1 ? '' : 's'} selected</span>` : 'Tap to choose multiple files';
 });
 
+// Uploading several files in one request to our own server hits Vercel's
+// 4.5MB body limit fast. So we try direct-to-Supabase uploads first (the
+// server only hands out short-lived signed URLs — tiny JSON, no file bytes)
+// and fall back to the old "proxy through our server" route if that's not
+// available (e.g. Supabase isn't configured, so we're on local disk/Blob).
 $('#bulkForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const msg = $('#bulkMsg');
@@ -244,27 +249,76 @@ $('#bulkForm').addEventListener('submit', async (e) => {
   msg.textContent = '';
   results.innerHTML = '';
 
-  const files = $('#bFiles').files;
-  if (!files.length) { msg.className = 'form-msg bad'; msg.textContent = 'Choose at least one file first.'; return; }
+  const fileList = [...$('#bFiles').files];
+  if (!fileList.length) { msg.className = 'form-msg bad'; msg.textContent = 'Choose at least one file first.'; return; }
 
-  const fd = new FormData();
-  fd.append('titlePrefix', $('#bTitlePrefix').value.trim());
-  fd.append('grade', $('#bGrade').value);
-  fd.append('type', $('#bType').value);
-  fd.append('isFree', $('#bFree').checked);
-  fd.append('featured', $('#bFeatured').checked);
-  fd.append('price', $('#bPrice').value || 0);
-  [...files].forEach(f => fd.append('files', f));
+  const meta = {
+    titlePrefix: $('#bTitlePrefix').value.trim(),
+    grade: $('#bGrade').value,
+    type: $('#bType').value,
+    isFree: $('#bFree').checked,
+    featured: $('#bFeatured').checked,
+    price: Number($('#bPrice').value || 0),
+  };
 
   const btn = $('#bulkBtn');
   btn.disabled = true;
   const label = $('#bulkLabel').textContent;
-  $('#bulkLabel').textContent = `Uploading ${files.length} file${files.length === 1 ? '' : 's'}…`;
+
+  let created = [];
+  let failed = [];
 
   try {
-    const data = await api('/api/admin/products/bulk', { method: 'POST', body: fd, isForm: true });
-    const created = data.created || [];
-    const failed = data.failed || [];
+    let signData = null;
+    try {
+      signData = await api('/api/admin/uploads/sign', {
+        method: 'POST',
+        body: { files: fileList.map(f => ({ name: f.name, type: f.type })) },
+      });
+    } catch { signData = null; } // not available -> fall back below
+
+    if (signData?.signed) {
+      signData.signed.forEach(s => { if (!s.ok) failed.push({ name: s.name, error: s.error }); });
+
+      const uploaded = [];
+      for (let i = 0; i < fileList.length; i++) {
+        const sign = signData.signed[i];
+        const file = fileList[i];
+        if (!sign || !sign.ok) continue;
+        $('#bulkLabel').textContent = `Uploading ${i + 1}/${fileList.length}…`;
+        try {
+          const putRes = await fetch(sign.uploadUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': sign.contentType || file.type || 'application/octet-stream', 'x-upsert': 'true' },
+            body: file,
+          });
+          if (!putRes.ok) throw new Error(`Upload failed (HTTP ${putRes.status})`);
+          uploaded.push({ name: file.name, publicUrl: sign.publicUrl, contentType: sign.contentType || file.type });
+        } catch (upErr) {
+          failed.push({ name: file.name, error: upErr.message });
+        }
+      }
+
+      if (uploaded.length) {
+        $('#bulkLabel').textContent = 'Saving…';
+        const fin = await api('/api/admin/products/bulk-finalize', { method: 'POST', body: { ...meta, items: uploaded } });
+        created = fin.created || [];
+      }
+    } else {
+      $('#bulkLabel').textContent = `Uploading ${fileList.length} file${fileList.length === 1 ? '' : 's'}…`;
+      const fd = new FormData();
+      fd.append('titlePrefix', meta.titlePrefix);
+      fd.append('grade', meta.grade);
+      fd.append('type', meta.type);
+      fd.append('isFree', meta.isFree);
+      fd.append('featured', meta.featured);
+      fd.append('price', meta.price);
+      fileList.forEach(f => fd.append('files', f));
+      const data = await api('/api/admin/products/bulk', { method: 'POST', body: fd, isForm: true });
+      created = data.created || [];
+      failed = failed.concat(data.failed || []);
+    }
+
     if (created.length) toast(`${created.length} activit${created.length === 1 ? 'y' : 'ies'} added`);
     results.innerHTML = [
       ...created.map(p => `<div class="bulk-row"><svg class="icon" aria-hidden="true"><use href="#ic-check"/></svg><span class="name">${p.title}</span></div>`),
