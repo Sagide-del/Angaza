@@ -46,11 +46,30 @@ const COMING_SOON = [
   { label: 'Online Classes' },
 ];
 
+const PAGE_SIZE = 24;
+
 const state = {
   products: [], level: 'all', type: 'all', query: '',
   freeOnly: false, onlyFeatured: false, onlyRevision: false,
+  visibleCount: PAGE_SIZE,
   cart: [],
 };
+
+function hasActiveFilters() {
+  return state.level !== 'all' || state.type !== 'all' || Boolean(state.query)
+    || state.freeOnly || state.onlyFeatured || state.onlyRevision;
+}
+
+function clearAllFilters() {
+  state.level = 'all'; state.type = 'all'; state.query = '';
+  state.freeOnly = false; state.onlyFeatured = false; state.onlyRevision = false;
+  state.visibleCount = PAGE_SIZE;
+  $('#levelSelect').value = 'all';
+  $('#typeSelect').value = 'all';
+  $('#search').value = '';
+  $$('#quickChips .filter-chip[data-key]').forEach(b => b.setAttribute('aria-pressed', 'false'));
+  renderCatalog();
+}
 
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -87,8 +106,10 @@ function renderFilterControls() {
     TYPES.map(t => `<option value="${t.id}">${t.label}</option>`).join('');
   $('#levelSelect').value = state.level;
   $('#typeSelect').value = state.type;
-  $('#levelSelect').addEventListener('change', (e) => { state.level = e.target.value; renderCatalog(); });
-  $('#typeSelect').addEventListener('change', (e) => { state.type = e.target.value; renderCatalog(); });
+  $('#levelSelect').addEventListener('change', (e) => { state.level = e.target.value; state.visibleCount = PAGE_SIZE; renderCatalog(); });
+  $('#typeSelect').addEventListener('change', (e) => { state.type = e.target.value; state.visibleCount = PAGE_SIZE; renderCatalog(); });
+
+  $('#clearFilters').addEventListener('click', clearAllFilters);
 
   renderQuickChips();
 }
@@ -103,15 +124,23 @@ function renderQuickChips() {
   $$('#quickChips .filter-chip[data-key]').forEach(b => b.addEventListener('click', () => {
     const key = b.dataset.key;
     state[key] = !state[key];
+    state.visibleCount = PAGE_SIZE;
     b.setAttribute('aria-pressed', state[key]);
     renderCatalog();
   }));
   $$('#quickChips .filter-chip.soon').forEach(b => b.addEventListener('click', () => {
-    toast(`${b.dataset.soon} is launching soon — stay tuned!`);
+    const label = b.dataset.soon;
+    const msg = encodeURIComponent(`Habari Angaza! I'd like to be notified when ${label} launches.`);
+    window.open(`https://wa.me/${WHATSAPP}?text=${msg}`, '_blank', 'noopener');
+    toast(`Thanks! We'll message you on WhatsApp when ${label} launches.`);
   }));
 }
 
-$('#search').addEventListener('input', (e) => { state.query = e.target.value.trim().toLowerCase(); renderCatalog(); });
+$('#search').addEventListener('input', (e) => {
+  state.query = e.target.value.trim().toLowerCase();
+  state.visibleCount = PAGE_SIZE;
+  renderCatalog();
+});
 
 /* ---------------------------------------------------------- product cards */
 function coverGradient(type) {
@@ -172,13 +201,35 @@ function renderCatalog() {
 
   list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
 
+  const active = hasActiveFilters();
+  $('#clearFilters').hidden = !active;
   $('#resultCount').textContent = `${list.length} resource${list.length === 1 ? '' : 's'}`;
 
-  grid.innerHTML = list.length ? list.map(cardHTML).join('') : `
-    <div class="empty">
-      <svg class="icon" aria-hidden="true"><use href="#ic-search"/></svg>
-      <p>No resources match that yet. Try clearing a filter or your search.</p>
-    </div>`;
+  if (!list.length) {
+    grid.innerHTML = `
+      <div class="empty">
+        <svg class="icon" aria-hidden="true"><use href="#ic-search"/></svg>
+        <p>No resources match that yet. Try clearing a filter or your search.</p>
+        ${active ? `<button class="btn btn-ghost" id="emptyClear" type="button">Clear filters</button>` : ''}
+      </div>`;
+    if (active) $('#emptyClear').addEventListener('click', clearAllFilters);
+    wireCardButtons(grid);
+    return;
+  }
+
+  const shown = list.slice(0, state.visibleCount);
+  const more = list.length - shown.length;
+
+  grid.innerHTML = shown.map(cardHTML).join('') +
+    (more > 0 ? `<div class="load-more"><button class="btn btn-ghost" id="loadMoreBtn" type="button">Show ${Math.min(more, PAGE_SIZE)} more</button></div>` : '');
+
+  if (more > 0) {
+    $('#loadMoreBtn').addEventListener('click', () => {
+      state.visibleCount += PAGE_SIZE;
+      renderCatalog();
+    });
+  }
+
   wireCardButtons(grid);
 }
 
