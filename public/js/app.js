@@ -37,7 +37,17 @@ const FORMATS = {
   file:  { label: 'File',  icon: 'ic-download' },
 };
 
-const state = { products: [], level: 'all', type: 'all', query: '', cart: [] };
+const QUICK_FILTERS = [
+  { key: 'onlyFeatured', label: 'Popular' },
+  { key: 'freeOnly',     label: 'Free samples' },
+  { key: 'onlyRevision', label: 'Revision Qs' },
+];
+
+const state = {
+  products: [], level: 'all', type: 'all', query: '',
+  freeOnly: false, onlyFeatured: false, onlyRevision: false,
+  cart: [],
+};
 
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -45,6 +55,10 @@ const money = (n) => `${CURRENCY} ${Number(n).toLocaleString('en-KE')}`;
 const gradeLabel = (id) => (LEVELS.find(l => l.id === id)?.name) || id;
 const typeMeta = (id) => TYPES.find(t => t.id === id)
   || (id === 'diy' ? { label: 'DIY Package', icon: 'ic-diy', color: '#E67E22' } : { label: id, icon: 'ic-book', color: '#F4A623' });
+
+function jumpToResources() {
+  document.getElementById('resources').scrollIntoView({ behavior: 'smooth' });
+}
 
 /* ---------------------------------------------------------- data */
 async function loadProducts() {
@@ -57,134 +71,37 @@ async function loadProducts() {
     const r = await fetch('data/products.json');
     state.products = await r.json();
   }
-  renderLevels();
-  renderFilters();
-  renderFeatured();
-  renderCategories();
-  renderProducts();
-  renderFree();
-  renderRevision();
+  renderFilterControls();
+  renderCatalog();
   $('#statCount').textContent = `${state.products.length}+`;
 }
 
-/* ---------------------------------------------------------- featured */
-function renderFeatured() {
-  const grid = $('#featuredGrid');
-  if (!grid) return;
-  let list = state.products.filter(p => p.featured && !p.isFree);
-  if (list.length < 4) list = [...list, ...state.products.filter(p => !p.isFree && !p.featured)];
-  list = list.slice(0, 4);
-  grid.innerHTML = list.map(cardHTML).join('');
-  wireCardButtons(grid);
-}
-
-/* ---------------------------------------------------------- revision spotlight */
-function renderRevision() {
-  const grid = $('#revisionGrid');
-  const section = $('#revision');
-  if (!grid || !section) return;
-  const list = state.products.filter(p => p.type === 'revision' && !p.isFree).slice(0, 3);
-  section.hidden = list.length === 0;
-  grid.innerHTML = list.map(cardHTML).join('');
-  wireCardButtons(grid);
-}
-$('#viewRevision')?.addEventListener('click', () => {
-  setType('revision');
-  setLevel('all');
-  document.getElementById('shop').scrollIntoView({ behavior: 'smooth' });
-});
-
-/* ---------------------------------------------------------- categories */
-function renderCategories() {
-  const grid = $('#categoryGrid');
-  if (!grid) return;
-  grid.innerHTML = TYPES.map(t => `
-      <button class="cat-card" data-cat="${t.id}" style="--c:${t.color}">
-        <svg class="icon cat-icon" aria-hidden="true"><use href="#${t.icon}"/></svg>
-        <h3>${t.label}</h3>
-        <span class="cat-price">${t.priceRange}</span>
-        <span class="go"><svg class="icon" aria-hidden="true"><use href="#ic-arrow"/></svg></span>
-      </button>`).join('');
-  $$('.cat-card', grid).forEach(b => b.addEventListener('click', () => {
-    setType(b.dataset.cat);
-    setLevel('all');
-    document.getElementById('shop').scrollIntoView({ behavior: 'smooth' });
-  }));
-}
-
-/* ---------------------------------------------------------- levels */
-function renderLevels() {
-  $('#levelGrid').innerHTML = LEVELS.map(l => `
-    <a class="level" href="#shop" data-level="${l.id}">
-      <span class="glyph" style="background:${l.color}22;color:${l.color}"><svg class="icon" aria-hidden="true"><use href="#${l.icon}"/></svg></span>
-      <h3>${l.name}</h3>
-      <div class="age">${l.age}</div>
-      <span class="chip" style="background:${l.color}22">${l.chip}</span>
-    </a>`).join('');
-
-  $$('#levelGrid .level').forEach(a => a.addEventListener('click', () => {
-    setLevel(a.dataset.level);
-  }));
-}
-
-/* ---------------------------------------------------------- browse tabs */
-$$('.browse-tab').forEach(t => t.addEventListener('click', () => {
-  $$('.browse-tab').forEach(x => { x.classList.remove('active'); x.setAttribute('aria-selected', 'false'); });
-  t.classList.add('active');
-  t.setAttribute('aria-selected', 'true');
-  const panel = t.dataset.panel;
-  $('#categoryGrid').hidden = panel !== 'category';
-  $('#levelGrid').hidden = panel !== 'level';
-}));
-
 /* ---------------------------------------------------------- filters */
-function renderFilters() {
-  const lvl = ['all', ...LEVELS.map(l => l.id)];
-  $('#levelChips').innerHTML = lvl.map(id => `
-    <button class="filter-chip" data-level="${id}" aria-pressed="${id === state.level}">
-      ${id === 'all' ? 'All levels' : gradeLabel(id)}
-    </button>`).join('');
+function renderFilterControls() {
+  $('#levelSelect').innerHTML = `<option value="all">All grades</option>` +
+    LEVELS.map(l => `<option value="${l.id}">${l.name}</option>`).join('');
+  $('#typeSelect').innerHTML = `<option value="all">All categories</option>` +
+    TYPES.map(t => `<option value="${t.id}">${t.label}</option>`).join('');
+  $('#levelSelect').value = state.level;
+  $('#typeSelect').value = state.type;
+  $('#levelSelect').addEventListener('change', (e) => { state.level = e.target.value; renderCatalog(); });
+  $('#typeSelect').addEventListener('change', (e) => { state.type = e.target.value; renderCatalog(); });
 
-  const typ = ['all', ...TYPES.map(t => t.id)];
-  $('#typeChips').innerHTML = typ.map(id => {
-    const t = id === 'all' ? { label: 'All types', icon: 'ic-sun' } : typeMeta(id);
-    return `<button class="filter-chip" data-type="${id}" aria-pressed="${id === state.type}">
-      <svg class="icon" aria-hidden="true"><use href="#${t.icon}"/></svg> ${t.label}
-    </button>`;
-  }).join('');
-
-  $$('#levelChips .filter-chip').forEach(b => b.addEventListener('click', () => setLevel(b.dataset.level)));
-  $$('#typeChips .filter-chip').forEach(b => b.addEventListener('click', () => setType(b.dataset.type)));
+  renderQuickChips();
 }
 
-function setLevel(id) {
-  state.level = id;
-  $$('#levelChips .filter-chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.level === id));
-  renderProducts();
-}
-function setType(id) {
-  state.type = id;
-  $$('#typeChips .filter-chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.type === id));
-  renderProducts();
+function renderQuickChips() {
+  $('#quickChips').innerHTML = QUICK_FILTERS.map(q =>
+    `<button class="filter-chip" data-key="${q.key}" aria-pressed="${state[q.key]}">${q.label}</button>`).join('');
+  $$('#quickChips .filter-chip').forEach(b => b.addEventListener('click', () => {
+    const key = b.dataset.key;
+    state[key] = !state[key];
+    b.setAttribute('aria-pressed', state[key]);
+    renderCatalog();
+  }));
 }
 
-$('#search').addEventListener('input', (e) => { state.query = e.target.value.trim().toLowerCase(); renderProducts(); });
-
-/* ---------------------------------------------------------- header shop dropdown */
-function jumpToShop() {
-  document.getElementById('shop').scrollIntoView({ behavior: 'smooth' });
-}
-$$('[data-nav-cat]').forEach(a => a.addEventListener('click', (e) => {
-  e.preventDefault();
-  setType(a.dataset.navCat);
-  setLevel('all');
-  jumpToShop();
-}));
-$$('[data-nav-level]').forEach(a => a.addEventListener('click', (e) => {
-  e.preventDefault();
-  setLevel(a.dataset.navLevel);
-  jumpToShop();
-}));
+$('#search').addEventListener('input', (e) => { state.query = e.target.value.trim().toLowerCase(); renderCatalog(); });
 
 /* ---------------------------------------------------------- product cards */
 function coverGradient(type) {
@@ -207,6 +124,7 @@ function cardHTML(p) {
         <div class="flags">
           ${p.isFree ? '<span class="flag free">Free</span>' : ''}
           ${hasDeal ? '<span class="flag deal">Deal</span>' : ''}
+          ${p.featured ? '<span class="flag popular">Popular</span>' : ''}
         </div>
         <span class="format"><svg class="icon" aria-hidden="true"><use href="#${fmt.icon}"/></svg> ${fmt.label}</span>
       </div>
@@ -229,29 +147,28 @@ function cardHTML(p) {
     </article>`;
 }
 
-function renderProducts() {
+/* ---------------------------------------------------------- unified catalogue */
+function renderCatalog() {
   const grid = $('#productGrid');
-  let list = state.products.filter(p => !p.isFree);
+  let list = state.products.slice();
+
+  if (state.freeOnly) list = list.filter(p => p.isFree);
+  if (state.onlyFeatured) list = list.filter(p => p.featured);
+  if (state.onlyRevision) list = list.filter(p => p.type === 'revision');
   if (state.level !== 'all') list = list.filter(p => p.grade === state.level || p.grade === 'all');
-  if (state.type  !== 'all') list = list.filter(p => p.type === state.type);
+  if (state.type !== 'all') list = list.filter(p => p.type === state.type);
   if (state.query) list = list.filter(p =>
     (p.title + ' ' + p.description + ' ' + gradeLabel(p.grade)).toLowerCase().includes(state.query));
 
-  $('#resultCount').textContent = `${list.length} activit${list.length === 1 ? 'y' : 'ies'}`;
+  list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+
+  $('#resultCount').textContent = `${list.length} resource${list.length === 1 ? '' : 's'}`;
 
   grid.innerHTML = list.length ? list.map(cardHTML).join('') : `
     <div class="empty">
       <svg class="icon" aria-hidden="true"><use href="#ic-search"/></svg>
-      <p>No activities match that yet. Try another level or clear your search.</p>
+      <p>No resources match that yet. Try clearing a filter or your search.</p>
     </div>`;
-  wireCardButtons(grid);
-}
-
-function renderFree() {
-  const grid = $('#freeGrid');
-  const list = state.products.filter(p => p.isFree);
-  grid.innerHTML = list.length ? list.map(cardHTML).join('') : `
-    <div class="empty"><p>Free samples are on the way — check back soon.</p></div>`;
   wireCardButtons(grid);
 }
 
@@ -349,10 +266,6 @@ function openOverlay(el) { el.classList.add('open'); document.body.style.overflo
 function closeOverlay(el) { el.classList.remove('open'); document.body.style.overflow = ''; }
 
 $('#openCart').addEventListener('click', () => { syncCart(); openOverlay($('#cartOverlay')); });
-$('#openSearch')?.addEventListener('click', () => {
-  document.getElementById('shop').scrollIntoView({ behavior: 'smooth' });
-  setTimeout(() => $('#search').focus(), 400);
-});
 $$('[data-close]').forEach(b => b.addEventListener('click', () => closeOverlay($('#cartOverlay'))));
 $$('.overlay').forEach(o => o.addEventListener('click', (e) => { if (e.target === o) closeOverlay(o); }));
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $$('.overlay.open').forEach(closeOverlay); });
@@ -520,7 +433,7 @@ function toast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
 }
 
-/* ---------------------------------------------------------- mobile nav */
+/* ---------------------------------------------------------- menu (info links) */
 $('#menuToggle').addEventListener('click', () => {
   const nav = $('#mobileNav');
   const open = nav.classList.toggle('open');

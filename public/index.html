@@ -3,17 +3,17 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Angaza | Bright Minds. Brighter Futures.</title>
-<meta name="description" content="Angaza provides engaging learning activities that help children learn, explore, and grow. Pay with M-Pesa, receive on WhatsApp." />
+<title>Angaza | Learning Resource Platform</title>
+<meta name="description" content="Angaza is a resource platform for Kenyan parents and teachers — search, filter and download CBC-aligned learning activities. Pay with M-Pesa, receive on WhatsApp." />
 <meta name="theme-color" content="#17324D" />
-<meta property="og:title" content="Angaza | Bright Minds. Brighter Futures." />
-<meta property="og:description" content="Engaging learning activities that help children learn, explore, and grow." />
+<meta property="og:title" content="Angaza | Learning Resource Platform" />
+<meta property="og:description" content="Search, filter and download CBC-aligned learning resources for every grade." />
 <meta property="og:type" content="website" />
 <meta property="og:image" content="assets/og-image.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Angaza | Bright Minds. Brighter Futures." />
+<meta name="twitter:title" content="Angaza | Learning Resource Platform" />
 <meta name="twitter:image" content="assets/og-image.png" />
 <link rel="icon" href="favicon.ico" sizes="any" />
 <link rel="icon" href="assets/angaza-icon.png" type="image/png" />
@@ -21,9 +21,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css?v=12" />
+<link rel="stylesheet" href="css/style.css?v=13" />
 </head>
 <body>
+
+<a class="skip-link" href="#resources">Skip to resources</a>
 
 <!-- ========================================================== ICON SPRITE -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -69,9 +71,9 @@
   <symbol id="ic-rocket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c2.6 2 4.3 5.4 4.3 8.9 0 2-.8 3.9-2 5.3L12 19.5l-2.3-2.3c-1.2-1.4-2-3.3-2-5.3C7.7 8.4 9.4 5 12 3Z"/><circle cx="12" cy="10.2" r="1.8"/><path d="M9 16.3c-1.7.2-2.8 1.2-3.1 3.1 1.9.3 2.9-.8 3.1-3.1Z"/><path d="M15 16.3c1.7.2 2.8 1.2 3.1 3.1-1.9.3-2.9-.8-3.1-3.1Z"/></symbol>
 </svg>
 
-<!-- ========================================================== HEADER -->
-<header>
-  <div class="container">
+<!-- ========================================================== HEADER (app bar — logo, search, cart, menu) -->
+<header class="app-header">
+  <div class="container app-header-top">
     <a class="brand" href="#top" aria-label="Angaza home">
       <img class="brand-mark" src="assets/angaza-icon.png" alt="" width="44" height="32" />
       <span class="brand-copy">
@@ -79,98 +81,42 @@
         <span class="brand-tagline">Bright Minds. Brighter Futures.</span>
       </span>
     </a>
-
-    <nav class="primary" aria-label="Primary">
-      <a href="#top">Home</a>
-      <div class="nav-item">
-        <a href="#shop" class="nav-shop-trigger">Shop <svg class="icon chev" aria-hidden="true"><use href="#ic-chevron"/></svg></a>
-        <div class="nav-dropdown" id="navDropdown">
-          <div class="nd-col">
-            <h4>Shop by category</h4>
-            <a data-nav-cat="workbook">Workbooks</a>
-            <a data-nav-cat="worksheet">Worksheets</a>
-            <a data-nav-cat="coloring">Colouring</a>
-            <a data-nav-cat="story">Stories</a>
-            <a data-nav-cat="flashcards">Flashcards</a>
-            <a data-nav-cat="poster">Posters</a>
-            <a data-nav-cat="revision">Revision Questions</a>
-          </div>
-          <div class="nd-col">
-            <h4>Shop by level</h4>
-            <a data-nav-level="pp1">Pre-Primary 1</a>
-            <a data-nav-level="pp2">Pre-Primary 2</a>
-            <a data-nav-level="grade1">Grade 1</a>
-            <a data-nav-level="grade2">Grade 2</a>
-            <a data-nav-level="grade3">Grade 3</a>
-            <a data-nav-level="grade4">Grade 4</a>
-            <a data-nav-level="grade5">Grade 5</a>
-            <a data-nav-level="grade6">Grade 6</a>
-          </div>
-          <div class="nd-col nd-highlight">
-            <h4>Quick links</h4>
-            <a href="#free">Free samples</a>
-            <a href="#browse">Browse all categories</a>
-            <a href="#shop" class="nd-cta">See everything <svg class="icon" aria-hidden="true"><use href="#ic-arrow"/></svg></a>
-          </div>
-        </div>
-      </div>
-      <a href="#how">How It Works</a>
-      <a href="#about">About Us</a>
-      <a href="#faq">FAQ</a>
-      <a href="#contact">Contact</a>
-    </nav>
-
     <div class="header-actions">
-      <button class="icon-only-btn" id="openSearch" aria-label="Search activities">
-        <svg class="icon" aria-hidden="true"><use href="#ic-search"/></svg>
-      </button>
       <button class="icon-only-btn cart-icon-btn" id="openCart" aria-label="Open cart">
         <svg class="icon" aria-hidden="true"><use href="#ic-cart"/></svg>
         <span class="cart-count" id="cartCount">0</span>
       </button>
-      <a href="#shop" class="btn btn-primary btn-browse">Browse Activities</a>
       <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
-        <svg class="icon" style="width:26px;height:26px" aria-hidden="true"><use href="#ic-menu"/></svg>
+        <svg class="icon" style="width:24px;height:24px" aria-hidden="true"><use href="#ic-menu"/></svg>
       </button>
     </div>
   </div>
-</header>
+  <div class="container app-header-search">
+    <label class="search-box">
+      <svg class="icon" aria-hidden="true"><use href="#ic-search"/></svg>
+      <span class="sr-only">Search resources</span>
+      <input type="search" id="search" placeholder="Search resources — e.g. 'counting' or 'story'" />
+    </label>
+  </div>
 
-<nav class="mobile-nav" id="mobileNav" aria-label="Mobile">
-  <a href="#top">Home</a>
-  <a href="#shop">Shop</a>
-  <a href="#how">How It Works</a>
-  <a href="#about">About Us</a>
-  <a href="#faq">FAQ</a>
-  <a href="#contact">Contact</a>
-</nav>
+  <nav class="mobile-nav" id="mobileNav" aria-label="More">
+    <a href="#resources">Browse resources</a>
+    <a href="#how">How it works</a>
+    <a href="#about">About Angaza</a>
+    <a href="#faq">FAQ</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
 
 <main id="top">
 
-<!-- ========================================================== HERO -->
-<section class="hero">
-  <div class="container">
-    <div class="hero-copy">
-      <span class="hero-badge">Affordable CBC learning materials</span>
-      <h1>For Every Child.<br /><span class="accent">Every Grade.</span></h1>
-      <p class="lede">Bright Minds. Brighter Futures. — printable workbooks, worksheets and revision activities aligned to the CBC curriculum, priced from KES 10, that help children explore, discover and grow with confidence.</p>
-      <div class="hero-cta">
-        <a href="#shop" class="btn btn-primary">Explore Activities <svg class="icon" aria-hidden="true"><use href="#ic-arrow"/></svg></a>
-        <a href="#how" class="btn btn-ghost">How It Works <svg class="icon" aria-hidden="true"><use href="#ic-play"/></svg></a>
-      </div>
-      <div class="hero-trust">
-        <div class="ht"><svg class="icon" aria-hidden="true"><use href="#ic-lock"/></svg><div><b>Secure</b><span>M-Pesa payment</span></div></div>
-        <div class="ht"><svg class="icon" aria-hidden="true"><use href="#ic-chat"/></svg><div><b>Instant</b><span>WhatsApp delivery</span></div></div>
-        <div class="ht"><svg class="icon" aria-hidden="true"><use href="#ic-users"/></svg><div><b>Made for</b><span>Young learners</span></div></div>
-      </div>
-    </div>
-    <div class="hero-art">
-      <div class="hero-blob hero-blob-1" aria-hidden="true"></div>
-      <div class="hero-blob hero-blob-2" aria-hidden="true"></div>
-      <img class="hero-photo" src="assets/Hero.png" alt="Two Angaza students smiling together over a handwriting activity" loading="eager" />
-    </div>
+<!-- ========================================================== INTRO STRIP (brand, no big hero) -->
+<div class="intro-strip">
+  <div class="container intro-strip-inner">
+    <img class="intro-mark" src="assets/angaza-icon.png" alt="" width="30" height="22" />
+    <p><strong>Angaza</strong> — Bright Minds. Brighter Futures. Affordable, CBC-aligned learning resources for every grade, delivered straight to WhatsApp.</p>
   </div>
-</section>
+</div>
 
 <!-- trust strip -->
 <div class="trust">
@@ -182,88 +128,16 @@
   </div>
 </div>
 
-<!-- ========================================================== POPULAR (impulse) -->
-<section class="section popular" id="popular">
+<!-- ========================================================== RESOURCES (the platform's main view) -->
+<section class="resources" id="resources">
   <div class="container">
-    <div class="section-head">
-      <span class="eyebrow"><svg class="sun-tick" aria-hidden="true"><use href="#ic-star"/></svg> Popular</span>
-      <h2>Popular Learning Activities</h2>
-      <p>Hand-picked activities parents are choosing this week.</p>
+    <div class="filter-bar">
+      <select id="levelSelect" class="filter-select" aria-label="Filter by grade level"></select>
+      <select id="typeSelect" class="filter-select" aria-label="Filter by category"></select>
+      <div class="chip-row" id="quickChips" role="group" aria-label="Quick filters"></div>
+      <span class="result-count" id="resultCount">Loading…</span>
     </div>
-    <div class="product-grid" id="featuredGrid"><!-- rendered by JS --></div>
-    <div style="text-align:center;margin-top:28px">
-      <a href="#shop" class="btn btn-ghost">See all activities <svg class="icon" aria-hidden="true"><use href="#ic-arrow"/></svg></a>
-    </div>
-  </div>
-</section>
-
-<!-- ========================================================== BROWSE (categories + levels, tabbed) -->
-<section class="section browse" id="browse">
-  <div class="container">
-    <div class="section-head">
-      <span class="eyebrow"><svg class="sun-tick" aria-hidden="true"><use href="#ic-star"/></svg> Find it fast</span>
-      <h2>Browse Angaza in a few taps</h2>
-      <p>Jump straight to what your child needs — by category or by level.</p>
-    </div>
-    <div class="browse-tabs" role="tablist" aria-label="Browse by">
-      <button class="browse-tab active" data-panel="category" role="tab" aria-selected="true">By category</button>
-      <button class="browse-tab" data-panel="level" role="tab" aria-selected="false">By level</button>
-    </div>
-    <div class="category-grid" id="categoryGrid" data-panel="category"><!-- rendered by JS --></div>
-    <div class="level-grid" id="levelGrid" data-panel="level" hidden><!-- rendered by JS --></div>
-  </div>
-</section>
-
-<!-- ========================================================== REVISION QUESTIONS SPOTLIGHT -->
-<section class="section revision" id="revision">
-  <div class="container">
-    <div class="revision-panel">
-      <div class="revision-copy">
-        <span class="eyebrow"><svg class="sun-tick" aria-hidden="true"><use href="#ic-star"/></svg> Exam-ready</span>
-        <h2>Revision Questions for every grade</h2>
-        <p>Past-paper style questions with answer keys, aligned to the CBC curriculum — perfect for end-of-term practice. From KES 50.</p>
-        <button class="btn btn-primary" id="viewRevision">View all Revision Questions <svg class="icon" aria-hidden="true"><use href="#ic-arrow"/></svg></button>
-      </div>
-      <div class="product-grid revision-grid" id="revisionGrid"><!-- rendered by JS --></div>
-    </div>
-  </div>
-</section>
-
-<!-- ========================================================== SHOP -->
-<section class="section shop" id="shop">
-  <div class="container">
-    <div class="section-head">
-      <span class="eyebrow"><svg class="sun-tick" aria-hidden="true"><use href="#ic-star"/></svg> The shop</span>
-      <h2>Print, play, learn</h2>
-      <p>Search or filter to find the perfect activity, then add it to your cart.</p>
-    </div>
-
-    <div class="shop-controls">
-      <div class="search-row">
-        <label class="search-box">
-          <svg class="icon" aria-hidden="true"><use href="#ic-search"/></svg>
-          <span class="sr-only">Search activities</span>
-          <input type="search" id="search" placeholder="Search activities, e.g. 'counting' or 'story'" />
-        </label>
-        <span class="result-count" id="resultCount">Loading…</span>
-      </div>
-      <div class="chip-row" id="levelChips" role="group" aria-label="Filter by level"></div>
-      <div class="chip-row" id="typeChips" role="group" aria-label="Filter by type"></div>
-    </div>
-
     <div class="product-grid" id="productGrid"><!-- rendered by JS --></div>
-  </div>
-</section>
-
-<!-- ========================================================== FREE -->
-<section class="section" id="free" style="background:var(--sky)">
-  <div class="container">
-    <div class="section-head">
-      <span class="eyebrow"><svg class="sun-tick" aria-hidden="true"><use href="#ic-star"/></svg> On the house</span>
-      <h2>Free sunshine samples</h2>
-      <p>No payment, no catch. Download, print, and see what your child thinks.</p>
-    </div>
-    <div class="product-grid" id="freeGrid"><!-- rendered by JS --></div>
   </div>
 </section>
 
@@ -279,7 +153,7 @@
       <div class="step">
         <div class="step-icon"><svg class="icon" aria-hidden="true"><use href="#ic-cart"/></svg><span class="num">1</span></div>
         <h3>Choose</h3>
-        <p>Browse and select activities that match your child's age, level and interests.</p>
+        <p>Search or filter resources that match your child's age, level and interests.</p>
       </div>
       <div class="step-line"></div>
       <div class="step">
@@ -292,6 +166,26 @@
         <div class="step-icon"><svg class="icon" aria-hidden="true"><use href="#ic-wa"/></svg><span class="num">3</span></div>
         <h3>Receive</h3>
         <p>Get your files instantly via WhatsApp and start learning right away.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================== ABOUT -->
+<section class="section about" id="about" style="background:var(--sky)">
+  <div class="container about-inner">
+    <div class="about-photo">
+      <img src="assets/Hero.png" alt="Two Angaza students smiling together over a handwriting activity" loading="lazy" />
+    </div>
+    <div class="about-copy">
+      <span class="eyebrow">About Angaza</span>
+      <h2>Why we started Angaza</h2>
+      <p>In Swahili, <em>angaza</em> means to illuminate — to shine light on something. That's what we set out to do: give Kenyan parents bright, CBC-aligned learning resources their children can hold in their hands, at a price that respects family budgets.</p>
+      <p>Every worksheet, story and flashcard is made with Kenyan names, places and everyday life, because children learn best when what they're reading looks like home.</p>
+      <div class="about-stats">
+        <div class="about-stat"><b id="statCount">0+</b><span>Resources &amp; growing</span></div>
+        <div class="about-stat"><b>PP1–Grade 6</b><span>Every level covered</span></div>
+        <div class="about-stat"><b>M-Pesa</b><span>Simple, local payment</span></div>
       </div>
     </div>
   </div>
@@ -310,23 +204,6 @@
       <div class="benefit"><span class="b-icon"><svg class="icon" aria-hidden="true"><use href="#ic-wa"/></svg></span><h3>Easy access</h3><p>Instant delivery straight to your WhatsApp.</p></div>
       <div class="benefit"><span class="b-icon"><svg class="icon" aria-hidden="true"><use href="#ic-heart"/></svg></span><h3>Affordable learning</h3><p>Quality resources priced for everyday families.</p></div>
       <div class="benefit"><span class="b-icon"><svg class="icon" aria-hidden="true"><use href="#ic-globe"/></svg></span><h3>Kenyan inspired</h3><p>Names, places, and stories made for local learners.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- ========================================================== ABOUT -->
-<section class="section about" id="about" style="background:var(--sky)">
-  <div class="container about-inner">
-    <div class="about-copy">
-      <span class="eyebrow">About Angaza</span>
-      <h2>Why we started Angaza</h2>
-      <p>In Swahili, <em>angaza</em> means to illuminate — to shine light on something. That's what we set out to do: give Kenyan parents bright, CBC-aligned learning activities their children can hold in their hands, at a price that respects family budgets.</p>
-      <p>Every worksheet, story and flashcard is made with Kenyan names, places and everyday life, because children learn best when what they're reading looks like home.</p>
-    </div>
-    <div class="about-stats">
-      <div class="about-stat"><b id="statCount">0+</b><span>Activities &amp; growing</span></div>
-      <div class="about-stat"><b>PP1–Grade 6</b><span>Every level covered</span></div>
-      <div class="about-stat"><b>M-Pesa</b><span>Simple, local payment</span></div>
     </div>
   </div>
 </section>
@@ -366,11 +243,11 @@
       <h2>Frequently asked questions</h2>
     </div>
     <div class="faq-list">
-      <details class="faq-item"><summary>How do I receive my activities?<svg class="icon chev" aria-hidden="true"><use href="#ic-chevron"/></svg></summary><p>After you pay, your files are sent to the WhatsApp number you enter at checkout. Most orders arrive within minutes.</p></details>
+      <details class="faq-item"><summary>How do I receive my resources?<svg class="icon chev" aria-hidden="true"><use href="#ic-chevron"/></svg></summary><p>After you pay, your files are sent to the WhatsApp number you enter at checkout. Most orders arrive within minutes.</p></details>
       <details class="faq-item"><summary>How do I pay?<svg class="icon chev" aria-hidden="true"><use href="#ic-chevron"/></svg></summary><p>Pay securely with M-Pesa. Send Money to the number shown at checkout, paste your confirmation code, and we do the rest.</p></details>
-      <details class="faq-item"><summary>Can I print the activities at home?<svg class="icon chev" aria-hidden="true"><use href="#ic-chevron"/></svg></summary><p>Yes. Every printable is A4-ready, so you can print at home or at any nearby cyber café.</p></details>
-      <details class="faq-item"><summary>What ages are the activities for?<svg class="icon chev" aria-hidden="true"><use href="#ic-chevron"/></svg></summary><p>Angaza covers Pre-Primary through upper primary, organised by level so you can pick what fits your child.</p></details>
-      <details class="faq-item"><summary>Do you have free samples?<svg class="icon chev" aria-hidden="true"><use href="#ic-chevron"/></svg></summary><p>Yes — look for the free samples in the shop. Download, print, and try them with no payment needed.</p></details>
+      <details class="faq-item"><summary>Can I print the resources at home?<svg class="icon chev" aria-hidden="true"><use href="#ic-chevron"/></svg></summary><p>Yes. Every printable is A4-ready, so you can print at home or at any nearby cyber café.</p></details>
+      <details class="faq-item"><summary>What ages are the resources for?<svg class="icon chev" aria-hidden="true"><use href="#ic-chevron"/></svg></summary><p>Angaza covers Pre-Primary through upper primary — use the grade filter above the resource grid to find what fits your child.</p></details>
+      <details class="faq-item"><summary>Do you have free samples?<svg class="icon chev" aria-hidden="true"><use href="#ic-chevron"/></svg></summary><p>Yes — tap the "Free samples" quick filter above the resource grid. Download, print, and try them with no payment needed.</p></details>
     </div>
   </div>
 </section>
@@ -405,8 +282,8 @@
   <div class="container inner">
     <span class="band-sun" aria-hidden="true"></span>
     <h2>Ready to help your child shine?</h2>
-    <p>Start with a free sample, then explore the full collection.</p>
-    <a href="#shop" class="btn btn-primary">Explore Angaza Activities <svg class="icon" aria-hidden="true"><use href="#ic-arrow"/></svg></a>
+    <p>Start with a free sample, then explore the full resource library.</p>
+    <a href="#resources" class="btn btn-primary">Browse Resources <svg class="icon" aria-hidden="true"><use href="#ic-arrow"/></svg></a>
   </div>
 </section>
 
@@ -421,15 +298,15 @@
           <span class="brand-word" style="color:#fff">Angaza</span>
         </a>
         <p class="foot-tag">Bright Minds. Brighter Futures.</p>
-        <p>Engaging learning activities that help children learn, explore, and grow.</p>
+        <p>A learning resource platform for Kenyan parents, teachers and children.</p>
         <div class="foot-social">
           <a href="#" aria-label="Instagram"><svg class="icon" aria-hidden="true"><use href="#ic-globe"/></svg></a>
           <a href="#" aria-label="Facebook"><svg class="icon" aria-hidden="true"><use href="#ic-book"/></svg></a>
           <a href="#" aria-label="WhatsApp"><svg class="icon" aria-hidden="true"><use href="#ic-wa"/></svg></a>
         </div>
       </div>
-      <div class="col"><h4>Explore</h4><a href="#shop">Shop</a><a href="#browse">Categories</a><a href="#how">How It Works</a><a href="#faq">FAQ</a></div>
-      <div class="col"><h4>Activities</h4><a href="#shop">Workbooks</a><a href="#shop">Worksheets</a><a href="#shop">Flashcards &amp; posters</a><a href="#shop">Revision Questions</a></div>
+      <div class="col"><h4>Explore</h4><a href="#resources">Browse resources</a><a href="#how">How It Works</a><a href="#faq">FAQ</a></div>
+      <div class="col"><h4>Resources</h4><a href="#resources">Workbooks</a><a href="#resources">Worksheets</a><a href="#resources">Flashcards &amp; posters</a><a href="#resources">Revision Questions</a></div>
       <div class="col"><h4>Contact</h4><p>hello@angaza.co.ke</p><p>+254 748 519 923</p><p>Nairobi, Kenya</p><p>Mon–Sat · 8am–6pm</p></div>
     </div>
     <div class="foot-bottom">
@@ -475,6 +352,6 @@
 <div class="toast" id="toast" role="status" aria-live="polite"><svg class="icon" aria-hidden="true"><use href="#ic-check"/></svg><span id="toastMsg"></span></div>
 
 <script src="config.js"></script>
-<script src="js/app.js?v=5"></script>
+<script src="js/app.js?v=6"></script>
 </body>
 </html>
