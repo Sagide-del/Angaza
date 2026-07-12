@@ -37,6 +37,7 @@ let adminKey = sessionStorage.getItem(KEY_STORE) || '';
 let products = [];
 let orders = [];
 let editingId = null;
+let waConnected = false;
 
 /* ---------------------------------------------------------- api */
 async function api(path, { method = 'GET', body, isForm } = {}) {
@@ -99,10 +100,15 @@ async function loadSummary() {
   products = data.products;
   orders = data.orders || [];
   const st = data.storage;
+  waConnected = st?.whatsapp === 'Connected';
   if (st) {
     const warn = st.files === 'local disk';
-    $('#envBadge').textContent = `Files: ${st.files}${warn ? ' ⚠' : ''} · Catalogue: ${st.catalogue}`;
-    $('#envBadge').title = warn ? 'Uploads will fail on Vercel — connect Supabase/Blob env vars and redeploy.' : '';
+    const waWarn = !waConnected;
+    $('#envBadge').textContent = `Files: ${st.files}${warn ? ' ⚠' : ''} · Catalogue: ${st.catalogue} · WhatsApp: ${st.whatsapp}${waWarn ? ' ⚠' : ''}`;
+    $('#envBadge').title = [
+      warn ? 'Uploads will fail on Vercel — connect Supabase/Blob env vars and redeploy.' : '',
+      waWarn ? 'No WhatsApp Business API connected — "Send files" will not reach customers until you set WHATSAPP_PROVIDER (meta/twilio) and its keys, then redeploy. Use the WhatsApp button to deliver by hand until then.' : '',
+    ].filter(Boolean).join(' ');
   }
   const s = data.stats;
   $('#sRevenue').textContent = money(s.revenue || 0);
@@ -151,6 +157,7 @@ function renderOrders() {
     const st = STATUS[o.status] || { label: o.status, cls: 'pending' };
     const items = (o.items || []).map(i => i.title).join(', ');
     const wa = `https://wa.me/${(o.phone || '').replace(/\D/g, '').replace(/^0/, '254')}?text=${encodeURIComponent('Habari ' + o.name + '! Here are your Angaza files. Asante!')}`;
+    const sendLabel = waConnected ? 'Send files' : 'Send files ⚠';
     return `
       <div class="order-row" data-id="${o.id}">
         <div class="order-main">
@@ -164,14 +171,29 @@ function renderOrders() {
         </div>
         <div class="order-acts">
           <button class="mini" data-files="${o.id}">Get files</button>
-          <a class="mini" href="${wa}" target="_blank" rel="noopener">WhatsApp</a>
-          ${o.status !== 'delivered' ? `<button class="mini done" data-deliver="${o.id}">Mark delivered</button>` : ''}
+          <a class="mini" href="${wa}" target="_blank" rel="noopener" title="Open a manual WhatsApp chat — you'll need to attach files yourself">Chat</a>
+          ${o.status !== 'delivered' ? `<button class="mini${waConnected ? ' done' : ''}" data-deliver="${o.id}" title="${waConnected ? 'Sends the actual files as WhatsApp attachments automatically' : 'WhatsApp Business API not connected yet — see the banner above'}">${sendLabel}</button>` : ''}
         </div>
       </div>`;
   }).join('');
 
   $$('[data-files]', wrap).forEach(b => b.addEventListener('click', () => showFiles(b.dataset.files)));
-  $$('[data-deliver]', wrap).forEach(b => b.addEventListener('click', () => setStatus(b.dataset.deliver, 'delivered')));
+  $$('[data-deliver]', wrap).forEach(b => b.addEventListener('click', () => sendOrderFiles(b.dataset.deliver, b)));
+}
+
+async function sendOrderFiles(id, btn) {
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  try {
+    await api(`/api/admin/orders/${id}/deliver`, { method: 'POST' });
+    toast('Files sent on WhatsApp');
+    await loadSummary();
+  } catch (e) {
+    toast(e.message);
+    btn.disabled = false;
+    btn.textContent = original;
+  }
 }
 
 async function showFiles(id) {

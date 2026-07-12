@@ -10,7 +10,7 @@ const multer = require('multer');
 const store = require('../lib/store');
 const { saveFile, formatFor, createSignedUpload, useSupabase } = require('../lib/blob');
 const { stkPush, isConfigured } = require('../lib/mpesa');
-const { sendWhatsApp, sendDocument } = require('../lib/whatsapp');
+const { sendWhatsApp, sendDocument, isConfigured: isWaConfigured } = require('../lib/whatsapp');
 
 // Pull the useful bit out of an axios/network error instead of the generic
 // "Request failed with status code 400" message, so failures are debuggable.
@@ -183,6 +183,7 @@ app.get('/api/admin/summary', requireAdmin, async (_req, res) => {
       catalogue: store.useKV ? 'Vercel KV' : 'local JSON',
       files: require('../lib/blob').useSupabase ? 'Supabase Storage'
            : require('../lib/blob').useBlob ? 'Vercel Blob' : 'local disk',
+      whatsapp: isWaConfigured() ? 'Connected' : 'Not connected',
     },
     stats: {
       total: products.length,
@@ -205,6 +206,25 @@ app.post('/api/admin/orders/:id/status', requireAdmin, async (req, res) => {
   if (status === 'delivered') patch.deliveredAt = new Date().toISOString();
   const updated = await store.updateOrder(req.params.id, patch);
   return updated ? res.json({ success: true, order: updated }) : res.status(404).json({ error: 'Order not found.' });
+});
+
+// Actually send the order's files as WhatsApp document attachments (not a link)
+// via the connected Meta/Twilio WhatsApp Business API, then mark the order delivered.
+app.post('/api/admin/orders/:id/deliver', requireAdmin, async (req, res) => {
+  if (!isWaConfigured()) {
+    return res.status(400).json({
+      error: 'WhatsApp isn’t connected yet. Set WHATSAPP_PROVIDER (meta or twilio) and its keys in your environment, then redeploy — until then use the WhatsApp button to send files by hand.',
+    });
+  }
+  const orders = await store.getOrders();
+  const order = orders.find(o => o.id === req.params.id);
+  if (!order) return res.status(404).json({ error: 'Order not found.' });
+  try {
+    await deliver(order);
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: describeError(e) });
+  }
 });
 
 // Fetch the actual file(s) for an order so the owner can forward them (manual mode)
