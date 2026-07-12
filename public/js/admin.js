@@ -39,6 +39,48 @@ let orders = [];
 let editingId = null;
 let waConnected = false;
 
+/* ---------------------------------------------------------- PDF -> cover image
+   Parents should only ever see a cover thumbnail on the site, never the full
+   PDF, before they pay. We render page 1 of any uploaded PDF to a PNG right
+   here in the browser (via pdf.js from a CDN) and upload that as the cover —
+   the actual PDF is only ever handed over after checkout / free-download. */
+const PDFJS_VERSION = '4.0.269';
+const PDFJS_BASE = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/build`;
+let _pdfjsLibPromise = null;
+function getPdfjs() {
+  if (!_pdfjsLibPromise) {
+    _pdfjsLibPromise = import(`${PDFJS_BASE}/pdf.min.mjs`).then((lib) => {
+      lib.GlobalWorkerOptions.workerSrc = `${PDFJS_BASE}/pdf.worker.min.mjs`;
+      return lib;
+    });
+  }
+  return _pdfjsLibPromise;
+}
+const isPdf = (file) => file && (file.type === 'application/pdf' || /\.pdf$/i.test(file.name || ''));
+
+async function pdfCoverFile(file) {
+  try {
+    const pdfjsLib = await getPdfjs();
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+    const page = await pdf.getPage(1);
+    const base = page.getViewport({ scale: 1 });
+    const scale = Math.min(2, 900 / base.width);
+    const viewport = page.getViewport({ scale });
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(viewport.width);
+    canvas.height = Math.round(viewport.height);
+    await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png', 0.92));
+    if (!blob) return null;
+    const name = (file.name || 'activity').replace(/\.[^./]+$/, '');
+    return new File([blob], `${name}-cover.png`, { type: 'image/png' });
+  } catch (e) {
+    console.error('PDF cover generation failed:', e);
+    return null;
+  }
+}
+
 /* ---------------------------------------------------------- api */
 async function api(path, { method = 'GET', body, isForm } = {}) {
   const headers = { 'x-admin-key': adminKey };
@@ -231,9 +273,21 @@ $('#bGrade').innerHTML = LEVELS.map(([v,l]) => `<option value="${v}">${l}</optio
 $('#bType').innerHTML = TYPES.map(([v,l]) => `<option value="${v}">${l}</option>`).join('');
 
 $('#fFree').addEventListener('change', (e) => { $('#priceRow').style.display = e.target.checked ? 'none' : 'grid'; });
-$('#fFile').addEventListener('change', (e) => {
+$('#fFile').addEventListener('change', async (e) => {
   const f = e.target.files[0];
   $('#dropText').innerHTML = f ? `<span class="name">${f.name}</span>` : 'Tap to choose the activity file';
+  if (f && isPdf(f) && !$('#fCover').files.length) {
+    $('#coverText').textContent = 'Generating a cover from page 1…';
+    const cover = await pdfCoverFile(f);
+    if (cover) {
+      const dt = new DataTransfer();
+      dt.items.add(cover);
+      $('#fCover').files = dt.files;
+      $('#coverText').innerHTML = `<span class="name">${cover.name}</span> — auto-generated from page 1, choose to replace`;
+    } else {
+      $('#coverText').textContent = 'Tap to choose a cover image';
+    }
+  }
 });
 $('#fCover').addEventListener('change', (e) => {
   const f = e.target.files[0];
@@ -291,20 +345,54 @@ $('#bulkForm').addEventListener('submit', async (e) => {
   let failed = [];
 
   try {
+    // Generate a page-1 cover for any PDFs up front — parents should only
+    // ever see this thumbnail on the site, never the full file, pre-purchase.
+    const covers = new Array(fileList.length).fill(null);
+    for (let i = 0; i < fileList.length; i++) {
+      if (isPdf(fileList[i])) {
+        $('#bulkLabel').textContent = `Preparing cover ${i + 1}/${fileList.length}…`;
+        covers[i] = await pdfCoverFile(fileList[i]);
+      }
+    }
+    const coverEntries = covers.map((c, i) => (c ? { idx: i, file: c } : null)).filter(Boolean);
+
     let signData = null;
     try {
       signData = await api('/api/admin/uploads/sign', {
         method: 'POST',
-        body: { files: fileList.map(f => ({ name: f.name, type: f.type })) },
+        body: {
+          files: [
+            ...fileList.map(f => ({ name: f.name, type: f.type })),
+            ...coverEntries.map(c => ({ name: c.file.name, type: c.file.type })),
+          ],
+        },
       });
     } catch { signData = null; } // not available -> fall back below
 
     if (signData?.signed) {
-      signData.signed.forEach(s => { if (!s.ok) failed.push({ name: s.name, error: s.error }); });
+      const mainSigns = signData.signed.slice(0, fileList.length);
+      const coverSigns = signData.signed.slice(fileList.length);
+      mainSigns.forEach(s => { if (!s.ok) failed.push({ name: s.name, error: s.error }); });
+
+      // Upload covers first (best-effort — a failed cover just falls back to a generic icon).
+      const coverPublicUrlByIdx = {};
+      for (let ci = 0; ci < coverEntries.length; ci++) {
+        const sign = coverSigns[ci];
+        const entry = coverEntries[ci];
+        if (!sign || !sign.ok) continue;
+        try {
+          const putRes = await fetch(sign.uploadUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': sign.contentType || 'image/png', 'x-upsert': 'true' },
+            body: entry.file,
+          });
+          if (putRes.ok) coverPublicUrlByIdx[entry.idx] = sign.publicUrl;
+        } catch { /* non-fatal */ }
+      }
 
       const uploaded = [];
       for (let i = 0; i < fileList.length; i++) {
-        const sign = signData.signed[i];
+        const sign = mainSigns[i];
         const file = fileList[i];
         if (!sign || !sign.ok) continue;
         $('#bulkLabel').textContent = `Uploading ${i + 1}/${fileList.length}…`;
@@ -315,7 +403,7 @@ $('#bulkForm').addEventListener('submit', async (e) => {
             body: file,
           });
           if (!putRes.ok) throw new Error(`Upload failed (HTTP ${putRes.status})`);
-          uploaded.push({ name: file.name, publicUrl: sign.publicUrl, contentType: sign.contentType || file.type });
+          uploaded.push({ name: file.name, publicUrl: sign.publicUrl, contentType: sign.contentType || file.type, coverPublicUrl: coverPublicUrlByIdx[i] || null });
         } catch (upErr) {
           failed.push({ name: file.name, error: upErr.message });
         }

@@ -129,7 +129,7 @@
                 </div>
               </div>
               <div class="field">
-                <label>Activity file <span style="color:var(--muted);font-weight:600">(PDF, image, audio, or ZIP for DIY)</span></label>
+                <label>Activity file <span style="color:var(--muted);font-weight:600">(PDF, image, audio, or ZIP for DIY — PDFs get a cover generated automatically below)</span></label>
                 <label class="file-drop" id="drop">
                   <svg class="icon" aria-hidden="true"><use href="#ic-upload"/></svg>
                   <p id="dropText">Tap to choose the activity file</p>
@@ -137,7 +137,7 @@
                 </label>
               </div>
               <div class="field">
-                <label>Cover image <span style="color:var(--muted);font-weight:600">(optional — nice thumbnail for audio/DIY)</span></label>
+                <label>Cover image <span style="color:var(--muted);font-weight:600">(optional — auto-generated from page 1 for PDFs; parents only ever see this cover, never the full file, before buying)</span></label>
                 <label class="file-drop" id="dropCover">
                   <svg class="icon" aria-hidden="true"><use href="#ic-upload"/></svg>
                   <p id="coverText">Tap to choose a cover image</p>
@@ -226,6 +226,6 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"><svg class="icon" aria-hidden="true"><use href="#ic-check"/></svg><span id="toastMsg"></span></div>
 
-<script src="js/admin.js?v=9"></script>
+<script src="js/admin.js?v=10"></script>
 </body>
 </html>

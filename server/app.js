@@ -329,9 +329,10 @@ app.post('/api/admin/products/bulk-finalize', requireAdmin, async (req, res) => 
       const title = niceTitleFromFilename(item.name, prefix);
       const id = makeUniqueId(title, products, created);
       const format = formatFor(item.contentType || '');
+      const preview = item.coverPublicUrl || (format === 'image' ? item.publicUrl : null);
       created.push({
         id, title, description: '', grade, type, isFree, featured, price,
-        format, fileUrl: item.publicUrl, preview: format === 'image' ? item.publicUrl : null,
+        format, fileUrl: item.publicUrl, preview,
         createdAt: new Date().toISOString(),
       });
     }
