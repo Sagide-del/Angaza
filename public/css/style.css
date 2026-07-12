@@ -103,6 +103,21 @@ img, svg { max-width: 100%; display: block; }
 .app-header-search { padding: 0 0 14px; }
 .app-header-search .search-box { max-width: 680px; margin: 0 auto; }
 
+.search-box {
+    display: flex; align-items: center; gap: 10px;
+    background: #fff; border: 1.5px solid var(--line); border-radius: var(--r-pill);
+    padding: 0 18px; transition: border-color var(--t), box-shadow var(--t);
+}
+.search-box:focus-within { border-color: var(--saffron); box-shadow: 0 0 0 4px rgba(246,201,69,0.18); }
+.search-box .icon { width: 18px; height: 18px; color: var(--muted); flex: none; }
+.search-box input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-family: var(--body); font-size: 15px; font-weight: 600; color: var(--ink);
+    padding: 13px 0;
+}
+.search-box input::placeholder { color: var(--muted); font-weight: 500; }
+.search-box input::-webkit-search-cancel-button { -webkit-appearance: none; }
+
 .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
 .brand-mark { width: auto; height: 34px; }
 .brand-copy { display: flex; flex-direction: column; line-height: 1.15; }
@@ -143,12 +158,6 @@ img, svg { max-width: 100%; display: block; }
 .mobile-nav a { text-decoration: none; font-weight: 800; padding: 13px 4px; border-bottom: 1px solid var(--line); color: var(--ink); }
 
 /* ============================================================ INTRO STRIP (brand, no big hero) */
-.intro-strip { background: var(--ink); }
-.intro-strip-inner { display: flex; align-items: center; gap: 12px; padding: 14px 24px; }
-.intro-mark { width: 26px; height: auto; flex: none; }
-.intro-strip p { color: rgba(255,255,255,0.85); font-size: 13.5px; font-weight: 600; line-height: 1.5; }
-.intro-strip strong { color: var(--saffron); }
-
 /* trust strip */
 .trust { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #fff; }
 .trust .container { display: flex; flex-wrap: wrap; gap: 14px 34px; justify-content: center; padding: 16px 24px; }
