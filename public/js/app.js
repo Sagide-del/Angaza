@@ -26,7 +26,7 @@ const TYPES = [
   { id: 'story',      label: 'Stories',             icon: 'ic-story',   color: '#7A5CD0', priceRange: 'KES 100–250' },
   { id: 'flashcards', label: 'Flashcards',          icon: 'ic-flash',   color: '#12A5A0', priceRange: 'KES 80–200' },
   { id: 'poster',     label: 'Posters',             icon: 'ic-globe',   color: '#E5397E', priceRange: 'KES 120–300' },
-  { id: 'revision',   label: 'Revision Questions',  icon: 'ic-quiz',    color: '#E67E22', priceRange: 'KES 50–200' },
+  { id: 'revision',   label: 'Exams & Assessment',  icon: 'ic-quiz',    color: '#E67E22', priceRange: 'KES 50–200' },
 ];
 
 const FORMATS = {
@@ -39,8 +39,11 @@ const FORMATS = {
 
 const QUICK_FILTERS = [
   { key: 'onlyFeatured', label: 'Popular' },
-  { key: 'freeOnly',     label: 'Free samples' },
-  { key: 'onlyRevision', label: 'Revision Qs' },
+  { key: 'onlyRevision', label: 'Exams & Assessment' },
+];
+
+const COMING_SOON = [
+  { label: 'Online Classes' },
 ];
 
 const state = {
@@ -91,13 +94,20 @@ function renderFilterControls() {
 }
 
 function renderQuickChips() {
-  $('#quickChips').innerHTML = QUICK_FILTERS.map(q =>
-    `<button class="filter-chip" data-key="${q.key}" aria-pressed="${state[q.key]}">${q.label}</button>`).join('');
-  $$('#quickChips .filter-chip').forEach(b => b.addEventListener('click', () => {
+  const active = QUICK_FILTERS.map(q =>
+    `<button class="filter-chip" type="button" data-key="${q.key}" aria-pressed="${state[q.key]}">${q.label}</button>`).join('');
+  const soon = COMING_SOON.map(c =>
+    `<button class="filter-chip soon" type="button" data-soon="${c.label}">${c.label}<span class="soon-badge">Soon</span></button>`).join('');
+  $('#quickChips').innerHTML = active + soon;
+
+  $$('#quickChips .filter-chip[data-key]').forEach(b => b.addEventListener('click', () => {
     const key = b.dataset.key;
     state[key] = !state[key];
     b.setAttribute('aria-pressed', state[key]);
     renderCatalog();
+  }));
+  $$('#quickChips .filter-chip.soon').forEach(b => b.addEventListener('click', () => {
+    toast(`${b.dataset.soon} is launching soon — stay tuned!`);
   }));
 }
 

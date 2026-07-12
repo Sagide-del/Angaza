@@ -17,7 +17,7 @@ const TYPES = [
   ['story','Story','ic-story','#7A5CD0'],
   ['flashcards','Flashcards','ic-flash','#12A5A0'],
   ['poster','Poster','ic-globe','#E5397E'],
-  ['revision','Revision Question','ic-quiz','#E67E22'],
+  ['revision','Exams & Assessment','ic-quiz','#E67E22'],
   ['audio','Audio lesson','ic-audio','#3A7BD5'],
   ['diy','DIY Package (legacy)','ic-diy','#E67E22'],
 ];
