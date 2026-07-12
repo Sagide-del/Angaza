@@ -162,7 +162,11 @@ app.get('/api/admin/summary', requireAdmin, async (_req, res) => {
   res.json({
     products,
     orders: orders.slice().reverse(),
-    storage: { catalogue: store.useKV ? 'Vercel KV' : 'local JSON', files: require('../lib/blob').useBlob ? 'Vercel Blob' : 'local disk' },
+    storage: {
+      catalogue: store.useKV ? 'Vercel KV' : 'local JSON',
+      files: require('../lib/blob').useSupabase ? 'Supabase Storage'
+           : require('../lib/blob').useBlob ? 'Vercel Blob' : 'local disk',
+    },
     stats: {
       total: products.length,
       paid: products.filter(p => !p.isFree).length,
