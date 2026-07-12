@@ -157,13 +157,6 @@ img, svg { max-width: 100%; display: block; }
 .mobile-nav.open { display: flex; }
 .mobile-nav a { text-decoration: none; font-weight: 800; padding: 13px 4px; border-bottom: 1px solid var(--line); color: var(--ink); }
 
-/* ============================================================ INTRO STRIP (brand, no big hero) */
-/* trust strip */
-.trust { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #fff; }
-.trust .container { display: flex; flex-wrap: wrap; gap: 14px 34px; justify-content: center; padding: 16px 24px; }
-.trust span { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; font-size: 13.5px; color: var(--muted); }
-.trust .icon { color: var(--saffron); }
-
 .btn {
     display: inline-flex; align-items: center; gap: 9px; cursor: pointer;
     font-family: var(--body); font-weight: 800; font-size: 16px; text-decoration: none;
