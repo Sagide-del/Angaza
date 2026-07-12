@@ -17,7 +17,7 @@ const TYPES = [
   ['story','Story','ic-story','#7A5CD0'],
   ['flashcards','Flashcards','ic-flash','#12A5A0'],
   ['poster','Poster','ic-globe','#E5397E'],
-  ['revision','Angaza Series','ic-quiz','#E67E22'],
+  ['revision','Angaza Series Exams','ic-quiz','#E67E22'],
   ['audio','Audio lesson','ic-audio','#3A7BD5'],
   ['diy','DIY Package (legacy)','ic-diy','#E67E22'],
 ];
@@ -273,8 +273,16 @@ $('#bGrade').innerHTML = LEVELS.map(([v,l]) => `<option value="${v}">${l}</optio
 $('#bType').innerHTML = TYPES.map(([v,l]) => `<option value="${v}">${l}</option>`).join('');
 
 $('#fFree').addEventListener('change', (e) => { $('#priceRow').style.display = e.target.checked ? 'none' : 'grid'; });
-$('#fType').addEventListener('change', (e) => { if (e.target.value === 'revision') $('#fPrice').value = 100; });
-$('#bType').addEventListener('change', (e) => { if (e.target.value === 'revision') $('#bPrice').value = 100; });
+$('#fType').addEventListener('change', (e) => {
+  const isSeries = e.target.value === 'revision';
+  if (isSeries) $('#fPrice').value = 100;
+  $('#termRow').hidden = !isSeries;
+});
+$('#bType').addEventListener('change', (e) => {
+  const isSeries = e.target.value === 'revision';
+  if (isSeries) $('#bPrice').value = 100;
+  $('#bTermRow').hidden = !isSeries;
+});
 $('#fFile').addEventListener('change', async (e) => {
   const f = e.target.files[0];
   $('#dropText').innerHTML = f ? `<span class="name">${f.name}</span>` : 'Tap to choose the activity file';
@@ -338,6 +346,7 @@ $('#bulkForm').addEventListener('submit', async (e) => {
     featured: $('#bFeatured').checked,
     price: Number($('#bPrice').value || 0),
   };
+  if (meta.type === 'revision' && $('#bTerm').value) meta.term = $('#bTerm').value;
 
   const btn = $('#bulkBtn');
   btn.disabled = true;
@@ -425,6 +434,7 @@ $('#bulkForm').addEventListener('submit', async (e) => {
       fd.append('isFree', meta.isFree);
       fd.append('featured', meta.featured);
       fd.append('price', meta.price);
+      if (meta.term) fd.append('term', meta.term);
       fileList.forEach(f => fd.append('files', f));
       const data = await api('/api/admin/products/bulk', { method: 'POST', body: fd, isForm: true });
       created = data.created || [];
@@ -436,7 +446,7 @@ $('#bulkForm').addEventListener('submit', async (e) => {
       ...created.map(p => `<div class="bulk-row"><svg class="icon" aria-hidden="true"><use href="#ic-check"/></svg><span class="name">${p.title}</span></div>`),
       ...failed.map(f => `<div class="bulk-row err"><svg class="icon" aria-hidden="true"><use href="#ic-trash"/></svg><span class="name">${f.name} — ${f.error}</span></div>`),
     ].join('');
-    if (!failed.length) { $('#bulkForm').reset(); $('#bDropText').textContent = 'Tap to choose multiple files'; $('#bPriceRow').style.display = 'block'; }
+    if (!failed.length) { $('#bulkForm').reset(); $('#bDropText').textContent = 'Tap to choose multiple files'; $('#bPriceRow').style.display = 'block'; $('#bTermRow').hidden = true; }
     await loadSummary();
   } catch (err) {
     msg.className = 'form-msg bad';
@@ -451,6 +461,7 @@ function resetForm() {
   editingId = null;
   $('#prodForm').reset();
   $('#priceRow').style.display = 'grid';
+  $('#termRow').hidden = true;
   $('#dropText').textContent = 'Tap to choose the activity file';
   $('#coverText').textContent = 'Tap to choose a cover image';
   $('#formTitle').textContent = 'Add activity';
@@ -471,6 +482,8 @@ function fillForm(p) {
   $('#fDesc').value = p.description || '';
   $('#fGrade').value = p.grade || 'all';
   $('#fType').value = p.type || 'worksheet';
+  $('#termRow').hidden = p.type !== 'revision';
+  $('#fTerm').value = p.term || '';
   $('#fFree').checked = !!p.isFree;
   $('#fFeatured').checked = !!p.featured;
   $('#priceRow').style.display = p.isFree ? 'none' : 'grid';
@@ -505,6 +518,7 @@ $('#prodForm').addEventListener('submit', async (e) => {
   fd.append('featured', $('#fFeatured').checked);
   fd.append('price', $('#fPrice').value || 0);
   fd.append('oldPrice', $('#fOld').value || 0);
+  if ($('#fType').value === 'revision' && $('#fTerm').value) fd.append('term', $('#fTerm').value);
   if (!editingId) fd.append('id', title);
   const file = $('#fFile').files[0];
   const cover = $('#fCover').files[0];

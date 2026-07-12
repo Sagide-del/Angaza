@@ -26,7 +26,7 @@ const TYPES = [
   { id: 'story',      label: 'Stories',             icon: 'ic-story',   color: '#7A5CD0', priceRange: 'KES 100–250' },
   { id: 'flashcards', label: 'Flashcards',          icon: 'ic-flash',   color: '#12A5A0', priceRange: 'KES 80–200' },
   { id: 'poster',     label: 'Posters',             icon: 'ic-globe',   color: '#E5397E', priceRange: 'KES 120–300' },
-  { id: 'revision',   label: 'Angaza Series',       icon: 'ic-quiz',    color: '#E67E22', priceRange: 'KES 100' },
+  { id: 'revision',   label: 'Angaza Series Exams', icon: 'ic-quiz',    color: '#E67E22', priceRange: 'KES 100' },
 ];
 
 const FORMATS = {
@@ -40,12 +40,14 @@ const FORMATS = {
 
 const QUICK_FILTERS = [
   { key: 'onlyFeatured', label: 'Popular' },
-  { key: 'onlyRevision', label: 'Angaza Series' },
+  { key: 'onlyRevision', label: 'Angaza Series Exams' },
 ];
 
 const COMING_SOON = [
   { label: 'Online Classes' },
 ];
+
+const TERM_LABELS = { term1: 'Term 1', term2: 'Term 2', term3: 'Term 3' };
 
 const PAGE_SIZE = 24;
 
@@ -172,6 +174,7 @@ function cardHTML(p) {
         <div class="tags">
           <span class="tag grade">${gradeLabel(p.grade)}</span>
           <span class="tag type">${t.label}</span>
+          ${p.term ? `<span class="tag term">${TERM_LABELS[p.term] || p.term}</span>` : ''}
         </div>
         <h3>${p.title}</h3>
         <p class="desc">${p.description}</p>
@@ -187,22 +190,40 @@ function cardHTML(p) {
     </article>`;
 }
 
-/* ---------------------------------------------------------- Angaza Series (grouped by grade, for schools) */
+/* ---------------------------------------------------------- Angaza Series Exams (grouped by grade & term, for schools) */
 function seriesNoteHTML() {
-  const msg = encodeURIComponent("Habari Angaza! I'm ordering the Angaza Series for my school and would like bulk pricing.");
+  const msg = encodeURIComponent("Habari Angaza! I'm ordering the Angaza Series Exams for my school and would like bulk pricing.");
   return `
     <div class="series-note">
       <svg class="icon" aria-hidden="true"><use href="#ic-quiz"/></svg>
-      <p><strong>Angaza Series</strong> — CBC exam &amp; assessment papers, arranged by grade. KES 100 per paper, available as PDF or Word. Ordering for a school? <a href="https://wa.me/${WHATSAPP}?text=${msg}" target="_blank" rel="noopener">Chat with us for bulk pricing</a>.</p>
+      <p><strong>Angaza Series Exams</strong> — CBC exam &amp; assessment papers, arranged by grade and term. KES 100 per paper, available as PDF or Word. Ordering for a school? <a href="https://wa.me/${WHATSAPP}?text=${msg}" target="_blank" rel="noopener">Chat with us for bulk pricing</a>.</p>
     </div>`;
 }
 
+// "All grades" view: one section per grade, so a school can find its grade fast.
 function renderGroupedByGrade(list) {
   const groups = {};
   list.forEach(p => { (groups[p.grade] = groups[p.grade] || []).push(p); });
   const order = [...LEVELS.map(l => l.id), 'all'];
   return order.filter(id => groups[id] && groups[id].length).map(id => {
     const label = id === 'all' ? 'All Grades' : gradeLabel(id);
+    const items = groups[id];
+    return `
+      <div class="grade-group">
+        <h3 class="grade-group-title">${label} <span class="grade-group-count">${items.length}</span></h3>
+        <div class="product-grid grade-group-grid">${items.map(cardHTML).join('')}</div>
+      </div>`;
+  }).join('');
+}
+
+// Single-grade view (once the grade header/select narrows to one grade):
+// split that grade's papers into Term 1 / Term 2 / Term 3.
+function renderTermGroups(list) {
+  const groups = {};
+  list.forEach(p => { const t = p.term && TERM_LABELS[p.term] ? p.term : 'unassigned'; (groups[t] = groups[t] || []).push(p); });
+  const order = ['term1', 'term2', 'term3', 'unassigned'];
+  return order.filter(id => groups[id] && groups[id].length).map(id => {
+    const label = id === 'unassigned' ? 'Not yet assigned to a term' : TERM_LABELS[id];
     const items = groups[id];
     return `
       <div class="grade-group">
@@ -249,8 +270,19 @@ function renderCatalog() {
   const loadMoreHTML = more > 0
     ? `<div class="load-more"><button class="btn btn-ghost" id="loadMoreBtn" type="button">Show ${Math.min(more, PAGE_SIZE)} more</button></div>` : '';
 
-  grid.innerHTML = (isAngazaSeries ? seriesNoteHTML() + renderGroupedByGrade(shown) : shown.map(cardHTML).join(''))
-    + loadMoreHTML;
+  let body;
+  if (isAngazaSeries && state.level !== 'all') {
+    // A specific grade is selected via the header grade select — split that grade's papers by term.
+    body = seriesNoteHTML() + renderTermGroups(shown);
+  } else if (isAngazaSeries) {
+    body = seriesNoteHTML()
+      + `<p class="series-grade-hint">Select a grade above to see that grade's papers split by Term 1 / 2 / 3.</p>`
+      + renderGroupedByGrade(shown);
+  } else {
+    body = shown.map(cardHTML).join('');
+  }
+
+  grid.innerHTML = body + loadMoreHTML;
 
   if (more > 0) {
     $('#loadMoreBtn').addEventListener('click', () => {
@@ -305,6 +337,7 @@ function openPreview(id) {
       <div class="lb-tags">
         <span class="tag grade">${gradeLabel(p.grade)}</span>
         <span class="tag type">${t.label}</span>
+        ${p.term && TERM_LABELS[p.term] ? `<span class="tag term">${TERM_LABELS[p.term]}</span>` : ''}
         <span class="tag type" style="background:rgba(30,42,68,.08);color:var(--ink)">${fmt.label}</span>
       </div>
       <h3>${p.title}</h3>
@@ -341,7 +374,7 @@ function syncCart() {
     const t = typeMeta(p.type);
     return `<div class="cart-line">
       <span class="thumb" style="background:${coverGradient(p.type)}"><svg class="icon" aria-hidden="true"><use href="#${t.icon}"/></svg></span>
-      <div class="meta"><h4>${p.title}</h4><span>${gradeLabel(p.grade)} · ${t.label}</span><br><button class="rm" data-rm="${p.id}">Remove</button></div>
+      <div class="meta"><h4>${p.title}</h4><span>${gradeLabel(p.grade)} · ${t.label}${p.term && TERM_LABELS[p.term] ? ` · ${TERM_LABELS[p.term]}` : ''}</span><br><button class="rm" data-rm="${p.id}">Remove</button></div>
       <span class="price">${money(p.price)}</span>
     </div>`;
   }).join('');
@@ -366,8 +399,13 @@ $('#checkoutBtn').addEventListener('click', () => {
   openCheckout();
 });
 
+function isSeriesCart() {
+  return state.cart.length > 0 && state.cart.every(p => p.type === 'revision');
+}
+
 function openCheckout() {
   const total = cartTotal();
+  const isSeries = isSeriesCart();
   const lines = state.cart.map(p => `<div class="pay-row"><span>${p.title}</span><b>${money(p.price)}</b></div>`).join('');
 
   const payInstructions = PAY.mode === 'stk'
@@ -386,9 +424,16 @@ function openCheckout() {
       <input id="cCode" required placeholder="e.g. TFA1B2C3D4" style="text-transform:uppercase" />
       <div class="hint">You get this by SMS right after paying.</div></div>`;
 
+  const schoolField = isSeries ? `
+    <div class="field"><label for="cSchool">School / institution name</label>
+      <input id="cSchool" placeholder="e.g. Sunrise Academy" />
+      <div class="hint">Used as the "Bill to" on your invoice. Leave blank if ordering as an individual.</div></div>` : '';
+
   const submitLabel = PAY.mode === 'stk'
     ? `<svg class="icon" aria-hidden="true"><use href="#ic-phone"/></svg> Pay ${money(total)} with M-Pesa`
-    : `<svg class="icon" aria-hidden="true"><use href="#ic-wa"/></svg> Confirm &amp; get my file${state.cart.length > 1 ? 's' : ''}`;
+    : isSeries
+      ? `<svg class="icon" aria-hidden="true"><use href="#ic-download"/></svg> Confirm &amp; download my paper${state.cart.length > 1 ? 's' : ''}`
+      : `<svg class="icon" aria-hidden="true"><use href="#ic-wa"/></svg> Confirm &amp; get my file${state.cart.length > 1 ? 's' : ''}`;
 
   $('#modalCard').innerHTML = `
     <div class="modal-head">
@@ -403,6 +448,7 @@ function openCheckout() {
       </div>
       <form id="payForm" novalidate>
         <div class="field"><label for="cName">Your name</label><input id="cName" required placeholder="e.g. Jane Mwangi" /></div>
+        ${schoolField}
         <div class="field"><label for="cPhone">WhatsApp number</label><input id="cPhone" required inputmode="tel" placeholder="07XX XXX XXX" /><div class="hint">We send your file${state.cart.length > 1 ? 's' : ''} here.</div></div>
         ${codeField}
         <div class="field"><label for="cEmail">Email (optional)</label><input id="cEmail" type="email" placeholder="jane@example.com" /></div>
@@ -422,25 +468,39 @@ async function submitManual(e) {
   const phone = $('#cPhone').value.trim();
   const code = ($('#cCode')?.value || '').trim().toUpperCase();
   const email = $('#cEmail').value.trim();
+  const school = ($('#cSchool')?.value || '').trim();
   if (!name || !phone || !code) return;
 
-  const items = state.cart.map(p => ({ id: p.id, title: p.title, price: p.price }));
+  const cartItems = state.cart.slice();
+  const isSeries = isSeriesCart();
+  const items = cartItems.map(p => ({ id: p.id, title: p.title, price: p.price, grade: p.grade, term: p.term || null }));
 
-  // Best-effort: log the order to your backend (works if the API/KV is set up).
-  fetch(`${API}/api/checkout`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, phone, email, mpesaCode: code, mode: 'manual', amount: cartTotal(), items }),
-  }).catch(() => {});
+  // Log the order to the backend — also gives us back a real order reference
+  // to use as the invoice number. Falls back to a local one if the API is down.
+  let reference = `ANG-${Date.now().toString(36).toUpperCase()}`;
+  try {
+    const r = await fetch(`${API}/api/checkout`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, phone, email, school, mpesaCode: code, mode: 'manual', amount: cartTotal(), items }),
+    });
+    const data = await r.json();
+    if (data?.reference) reference = data.reference;
+  } catch { /* offline-safe: keep the locally generated reference */ }
 
-  // Primary, reliable step: open WhatsApp to you with the full order + code.
+  // Also open WhatsApp to you with the full order + code, so nothing depends on the API alone.
   const summary = items.map(p => `• ${p.title} (${money(p.price)})`).join('%0A');
   const msg =
     `Habari Angaza! I've paid and here's my order:%0A${summary}%0ATotal: ${money(cartTotal())}` +
     `%0AName: ${encodeURIComponent(name)}%0AWhatsApp: ${encodeURIComponent(phone)}` +
+    (school ? `%0ASchool: ${encodeURIComponent(school)}` : '') +
     `%0AM-Pesa code: ${encodeURIComponent(code)}`;
   window.open(`https://wa.me/${WHATSAPP}?text=${msg}`, '_blank');
 
-  showSuccess(name, phone, 'manual');
+  if (isSeries) {
+    showSeriesSuccess({ id: reference, date: new Date(), name, phone, email, school, code, items: cartItems, total: cartTotal() });
+  } else {
+    showSuccess(name, phone, 'manual');
+  }
   state.cart = [];
   syncCart();
 }
@@ -497,6 +557,82 @@ function showSuccess(name, phone, kind) {
       <button class="btn btn-primary" data-x2 style="justify-content:center;width:100%">Done</button>
     </div>`;
   $('[data-x2]').addEventListener('click', () => closeOverlay($('#modalOverlay')));
+}
+
+/* -------- Angaza Series Exams: instant download + invoice on the success screen -------- */
+function showSeriesSuccess(order) {
+  const downloads = order.items.map(p => `
+    <a class="dl-row" href="${p.fileUrl || p.pdfUrl || '#'}" target="_blank" rel="noopener">
+      <svg class="icon" aria-hidden="true"><use href="#ic-download"/></svg>
+      <span>${p.title}${p.term && TERM_LABELS[p.term] ? ` — ${TERM_LABELS[p.term]}` : ''}</span>
+    </a>`).join('');
+
+  $('#modalCard').innerHTML = `
+    <div class="success">
+      <div class="ring"><svg class="icon" aria-hidden="true"><use href="#ic-check"/></svg></div>
+      <h2>Order complete!</h2>
+      <p>${order.name}, thanks for your order${order.school ? ` for ${order.school}` : ''}. Download your papers below.</p>
+      <div class="dl-list">${downloads}</div>
+      <div class="note">A copy of this order has also been sent to us on WhatsApp with your M-Pesa code — message us anytime if a link doesn't open.</div>
+      <button class="btn btn-primary" id="viewInvoiceBtn" style="justify-content:center;width:100%;margin-top:14px">
+        <svg class="icon" aria-hidden="true"><use href="#ic-printer"/></svg> View / print invoice
+      </button>
+      <button class="btn btn-ghost" data-x2 style="justify-content:center;width:100%;margin-top:10px">Done</button>
+    </div>`;
+  $('#viewInvoiceBtn').addEventListener('click', () => openInvoice(order));
+  $('[data-x2]').addEventListener('click', () => closeOverlay($('#modalOverlay')));
+}
+
+function invoiceHTML(order) {
+  const rows = order.items.map(p => `
+    <tr>
+      <td>${p.title}</td>
+      <td>${gradeLabel(p.grade)}</td>
+      <td>${p.term && TERM_LABELS[p.term] ? TERM_LABELS[p.term] : '—'}</td>
+      <td style="text-align:right">${money(p.price)}</td>
+    </tr>`).join('');
+  const dateStr = order.date.toLocaleDateString('en-KE', { year: 'numeric', month: 'long', day: 'numeric' });
+  const billName = order.school || order.name;
+  const billSub = order.school ? `${order.name}<br>` : '';
+
+  return `<!doctype html><html><head><meta charset="utf-8"><title>Invoice ${order.id}</title>
+<style>
+  body{font-family:Arial,Helvetica,sans-serif;color:#17212B;padding:44px;max-width:720px;margin:0 auto}
+  h1{color:#17324D;font-size:22px;margin:6px 0 0}
+  .eyebrow{color:#E0A800;font-weight:700;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase}
+  .row{display:flex;justify-content:space-between;margin-top:30px;gap:24px;flex-wrap:wrap}
+  .box h4{margin:0 0 6px;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:#667085}
+  .box p{margin:0;font-size:14px;line-height:1.6}
+  table{width:100%;border-collapse:collapse;margin-top:32px}
+  th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:#667085;border-bottom:2px solid #17324D;padding:8px 6px}
+  td{padding:11px 6px;border-bottom:1px solid #ECEEF2;font-size:14px}
+  tfoot td{border-bottom:none;font-weight:800;font-size:17px;padding-top:16px;color:#17324D}
+  .foot{margin-top:44px;font-size:12.5px;color:#667085;border-top:1px solid #ECEEF2;padding-top:16px}
+  .print-btn{margin-top:26px;padding:11px 24px;background:#17324D;color:#fff;border:none;border-radius:999px;font-weight:700;font-size:14px;cursor:pointer}
+  @media print{.print-btn{display:none}}
+</style></head>
+<body>
+  <span class="eyebrow">Invoice</span>
+  <h1>Angaza (Angazakids)</h1>
+  <div class="row">
+    <div class="box"><h4>Bill to</h4><p><b>${billName}</b><br>${billSub}${order.phone}${order.email ? `<br>${order.email}` : ''}</p></div>
+    <div class="box"><h4>Invoice details</h4><p>No. ${order.id}<br>Date: ${dateStr}<br>Payment: M-Pesa (ref ${order.code})</p></div>
+  </div>
+  <table>
+    <thead><tr><th>Item</th><th>Grade</th><th>Term</th><th style="text-align:right">Amount</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr><td colspan="3">Total</td><td style="text-align:right">${money(order.total)}</td></tr></tfoot>
+  </table>
+  <p class="foot">Angaza — Bright Minds. Brighter Futures. &middot; hello@angaza.co.ke &middot; +254 748 519 923 &middot; Nairobi, Kenya</p>
+  <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+</body></html>`;
+}
+
+function openInvoice(order) {
+  const w = window.open('', '_blank');
+  if (!w) { toast('Please allow pop-ups to view the invoice.'); return; }
+  w.document.write(invoiceHTML(order));
+  w.document.close();
 }
 
 /* ---------------------------------------------------------- free download */

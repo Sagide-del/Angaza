@@ -112,6 +112,15 @@
                   <select id="fType"></select>
                 </div>
               </div>
+              <div class="field" id="termRow" hidden>
+                <label for="fTerm">Term</label>
+                <select id="fTerm">
+                  <option value="">— Select term —</option>
+                  <option value="term1">Term 1</option>
+                  <option value="term2">Term 2</option>
+                  <option value="term3">Term 3</option>
+                </select>
+              </div>
               <div class="field">
                 <label class="toggle"><input type="checkbox" id="fFree" /> <span>Free sample (no price)</span></label>
               </div>
@@ -166,6 +175,15 @@
                   <label for="bType">Type</label>
                   <select id="bType"></select>
                 </div>
+              </div>
+              <div class="field" id="bTermRow" hidden>
+                <label for="bTerm">Term</label>
+                <select id="bTerm">
+                  <option value="">— Select term —</option>
+                  <option value="term1">Term 1</option>
+                  <option value="term2">Term 2</option>
+                  <option value="term3">Term 3</option>
+                </select>
               </div>
               <div class="field">
                 <label class="toggle"><input type="checkbox" id="bFree" /> <span>Free samples (no price)</span></label>
@@ -226,6 +244,6 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"><svg class="icon" aria-hidden="true"><use href="#ic-check"/></svg><span id="toastMsg"></span></div>
 
-<script src="js/admin.js?v=12"></script>
+<script src="js/admin.js?v=13"></script>
 </body>
 </html>

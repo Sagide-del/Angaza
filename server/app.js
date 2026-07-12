@@ -70,6 +70,8 @@ function buildProduct(body, files, existing = {}) {
     price: isFree ? 0 : Number(body.price || existing.price || 0),
     format: existing.format || 'pdf',
   };
+  if (body.term || existing.term) p.term = body.term || existing.term;
+  else delete p.term;
   const oldPrice = Number(body.oldPrice || 0);
   if (!isFree && oldPrice > p.price) p.oldPrice = oldPrice; else delete p.oldPrice;
 
@@ -95,7 +97,7 @@ app.get('/api/freebies/:id', async (req, res) => {
 
 /* ---------------------------------------------------------- checkout */
 app.post('/api/checkout', async (req, res) => {
-  const { name, phone, email, amount, items, mode, mpesaCode } = req.body || {};
+  const { name, phone, email, school, amount, items, mode, mpesaCode } = req.body || {};
   if (!name || !phone || !Array.isArray(items) || !items.length) {
     return res.status(400).json({ success: false, error: 'Missing name, phone, or items.' });
   }
@@ -105,7 +107,7 @@ app.post('/api/checkout', async (req, res) => {
   // MANUAL: personal M-Pesa. Log the order + notify the owner. Delivery is done by hand.
   if (mode === 'manual' || !isConfigured()) {
     const order = {
-      id: reference, name, phone, email: email || null, items, amount: amount || total,
+      id: reference, name, phone, email: email || null, school: school || null, items, amount: amount || total,
       mpesaCode: mpesaCode || null, status: 'pending_verification',
       mpesa: { mode: 'manual' }, createdAt: new Date().toISOString(),
     };
@@ -114,7 +116,7 @@ app.post('/api/checkout', async (req, res) => {
     if (owner) {
       const list = items.map(i => `• ${i.title} (KES ${i.price})`).join('\n');
       await sendWhatsApp({ phone: owner,
-        message: `*New Angaza order ${reference}*\n${name} · ${phone}\nM-Pesa code: ${mpesaCode || '—'}\n${list}\nTotal: KES ${amount || total}\n\nVerify the payment, then send the file(s).` });
+        message: `*New Angaza order ${reference}*\n${name} · ${phone}${school ? `\nSchool: ${school}` : ''}\nM-Pesa code: ${mpesaCode || '—'}\n${list}\nTotal: KES ${amount || total}\n\nVerify the payment, then send the file(s).` });
     }
     return res.json({ success: true, reference, mode: 'manual' });
   }
@@ -123,7 +125,7 @@ app.post('/api/checkout', async (req, res) => {
   try {
     const push = await stkPush({ phone, amount: amount || total, reference, description: 'Angaza activities' });
     const order = {
-      id: reference, name, phone, email: email || null, items, amount: amount || total,
+      id: reference, name, phone, email: email || null, school: school || null, items, amount: amount || total,
       status: push.ok ? 'awaiting_payment' : 'failed',
       mpesa: { mode: 'stk', checkoutRequestId: push.checkoutRequestId || null },
       createdAt: new Date().toISOString(),
@@ -260,6 +262,7 @@ app.post('/api/admin/products/bulk', requireAdmin, uploadMany, async (req, res) 
     const price = isFree ? 0 : Number(body.price || 0);
     const grade = body.grade || 'all';
     const type = body.type || 'worksheet';
+    const term = body.term || null;
     const prefix = (body.titlePrefix || '').trim();
 
     const products = await store.getProducts();
@@ -274,6 +277,7 @@ app.post('/api/admin/products/bulk', requireAdmin, uploadMany, async (req, res) 
         const format = formatFor(file.mimetype);
         created.push({
           id, title, description: '', grade, type, isFree, featured, price,
+          ...(term ? { term } : {}),
           format, fileUrl, preview: format === 'image' ? fileUrl : null,
           createdAt: new Date().toISOString(),
         });
@@ -321,6 +325,7 @@ app.post('/api/admin/products/bulk-finalize', requireAdmin, async (req, res) => 
     const price = isFree ? 0 : Number(body.price || 0);
     const grade = body.grade || 'all';
     const type = body.type || 'worksheet';
+    const term = body.term || null;
     const prefix = (body.titlePrefix || '').trim();
 
     const products = await store.getProducts();
@@ -332,6 +337,7 @@ app.post('/api/admin/products/bulk-finalize', requireAdmin, async (req, res) => 
       const preview = item.coverPublicUrl || (format === 'image' ? item.publicUrl : null);
       created.push({
         id, title, description: '', grade, type, isFree, featured, price,
+        ...(term ? { term } : {}),
         format, fileUrl: item.publicUrl, preview,
         createdAt: new Date().toISOString(),
       });
