@@ -17,8 +17,9 @@ const TYPES = [
   ['story','Story','ic-story','#7A5CD0'],
   ['flashcards','Flashcards','ic-flash','#12A5A0'],
   ['poster','Poster','ic-globe','#E5397E'],
+  ['revision','Revision Question','ic-quiz','#E67E22'],
   ['audio','Audio lesson','ic-audio','#3A7BD5'],
-  ['diy','DIY Package','ic-diy','#E67E22'],
+  ['diy','DIY Package (legacy)','ic-diy','#E67E22'],
 ];
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -27,7 +28,7 @@ const money = (n) => `KES ${Number(n).toLocaleString('en-KE')}`;
 const levelName = (id) => (LEVELS.find(l => l[0] === id)?.[1]) || id;
 const typeMeta = (id) => TYPES.find(t => t[0] === id) || ['','', 'ic-book', '#F4A623'];
 const coverGrad = (id) => {
-  const map = { workbook:['#F4A623','#FF8C42'], coloring:['#FF6B4A','#FF9A6C'], worksheet:['#2FAE66','#5FD08A'], story:['#7A5CD0','#9E86E0'], poster:['#E5397E','#F26AA0'], flashcards:['#12A5A0','#3FC7C2'], audio:['#3A7BD5','#6FA8E8'], diy:['#E67E22','#F0A15A'] };
+  const map = { workbook:['#F4A623','#FF8C42'], coloring:['#FF6B4A','#FF9A6C'], worksheet:['#2FAE66','#5FD08A'], story:['#7A5CD0','#9E86E0'], poster:['#E5397E','#F26AA0'], flashcards:['#12A5A0','#3FC7C2'], audio:['#3A7BD5','#6FA8E8'], revision:['#E67E22','#F0A15A'], diy:['#E67E22','#F0A15A'] };
   const [a,b] = map[id] || ['#F4A623','#FF8C42'];
   return `linear-gradient(135deg,${a},${b})`;
 };
@@ -97,6 +98,12 @@ async function loadSummary() {
   }
   products = data.products;
   orders = data.orders || [];
+  const st = data.storage;
+  if (st) {
+    const warn = st.files === 'local disk';
+    $('#envBadge').textContent = `Files: ${st.files}${warn ? ' ⚠' : ''} · Catalogue: ${st.catalogue}`;
+    $('#envBadge').title = warn ? 'Uploads will fail on Vercel — connect Supabase/Blob env vars and redeploy.' : '';
+  }
   const s = data.stats;
   $('#sRevenue').textContent = money(s.revenue || 0);
   $('#sOrders').textContent = s.orders;

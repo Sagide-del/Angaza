@@ -6,3 +6,6 @@ public/assets/uploads/*
 !public/assets/uploads/.gitkeep
 *.log
 .DS_Store
+
+.vercel
+.env*

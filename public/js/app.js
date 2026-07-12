@@ -20,13 +20,13 @@ const LEVELS = [
 ];
 
 const TYPES = [
-  { id: 'workbook',   label: 'Workbooks',    icon: 'ic-book',    color: '#F4A623' },
-  { id: 'worksheet',  label: 'Worksheets',   icon: 'ic-pencil',  color: '#2FAE66' },
-  { id: 'coloring',   label: 'Colouring',    icon: 'ic-palette', color: '#FF6B4A' },
-  { id: 'story',      label: 'Stories',      icon: 'ic-story',   color: '#7A5CD0' },
-  { id: 'flashcards', label: 'Flashcards',   icon: 'ic-flash',   color: '#12A5A0' },
-  { id: 'poster',     label: 'Posters',      icon: 'ic-globe',   color: '#E5397E' },
-  { id: 'diy',        label: 'DIY Packages', icon: 'ic-diy',     color: '#E67E22' },
+  { id: 'workbook',   label: 'Workbooks',           icon: 'ic-book',    color: '#F4A623', priceRange: 'KES 200–500' },
+  { id: 'worksheet',  label: 'Worksheets',          icon: 'ic-pencil',  color: '#2FAE66', priceRange: 'KES 10–50' },
+  { id: 'coloring',   label: 'Colouring',           icon: 'ic-palette', color: '#FF6B4A', priceRange: 'KES 50–150' },
+  { id: 'story',      label: 'Stories',             icon: 'ic-story',   color: '#7A5CD0', priceRange: 'KES 100–250' },
+  { id: 'flashcards', label: 'Flashcards',          icon: 'ic-flash',   color: '#12A5A0', priceRange: 'KES 80–200' },
+  { id: 'poster',     label: 'Posters',             icon: 'ic-globe',   color: '#E5397E', priceRange: 'KES 120–300' },
+  { id: 'revision',   label: 'Revision Questions',  icon: 'ic-quiz',    color: '#E67E22', priceRange: 'KES 50–200' },
 ];
 
 const FORMATS = {
@@ -43,7 +43,8 @@ const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const money = (n) => `${CURRENCY} ${Number(n).toLocaleString('en-KE')}`;
 const gradeLabel = (id) => (LEVELS.find(l => l.id === id)?.name) || id;
-const typeMeta = (id) => TYPES.find(t => t.id === id) || { label: id, icon: 'ic-book', color: '#F4A623' };
+const typeMeta = (id) => TYPES.find(t => t.id === id)
+  || (id === 'diy' ? { label: 'DIY Package', icon: 'ic-diy', color: '#E67E22' } : { label: id, icon: 'ic-book', color: '#F4A623' });
 
 /* ---------------------------------------------------------- data */
 async function loadProducts() {
@@ -62,6 +63,7 @@ async function loadProducts() {
   renderCategories();
   renderProducts();
   renderFree();
+  renderRevision();
   $('#statCount').textContent = `${state.products.length}+`;
 }
 
@@ -76,6 +78,22 @@ function renderFeatured() {
   wireCardButtons(grid);
 }
 
+/* ---------------------------------------------------------- revision spotlight */
+function renderRevision() {
+  const grid = $('#revisionGrid');
+  const section = $('#revision');
+  if (!grid || !section) return;
+  const list = state.products.filter(p => p.type === 'revision' && !p.isFree).slice(0, 3);
+  section.hidden = list.length === 0;
+  grid.innerHTML = list.map(cardHTML).join('');
+  wireCardButtons(grid);
+}
+$('#viewRevision')?.addEventListener('click', () => {
+  setType('revision');
+  setLevel('all');
+  document.getElementById('shop').scrollIntoView({ behavior: 'smooth' });
+});
+
 /* ---------------------------------------------------------- categories */
 function renderCategories() {
   const grid = $('#categoryGrid');
@@ -84,6 +102,7 @@ function renderCategories() {
       <button class="cat-card" data-cat="${t.id}" style="--c:${t.color}">
         <svg class="icon cat-icon" aria-hidden="true"><use href="#${t.icon}"/></svg>
         <h3>${t.label}</h3>
+        <span class="cat-price">${t.priceRange}</span>
         <span class="go"><svg class="icon" aria-hidden="true"><use href="#ic-arrow"/></svg></span>
       </button>`).join('');
   $$('.cat-card', grid).forEach(b => b.addEventListener('click', () => {
