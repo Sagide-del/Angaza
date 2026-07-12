@@ -52,6 +52,18 @@
 .panel-head { padding: 18px 22px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
 .panel-head h2 { font-size: 19px; }
 .panel-head .editing { font-size: 12px; font-weight: 800; color: var(--coral); }
+.mode-tabs { display: flex; gap: 6px; }
+.mode-tab {
+  font-family: var(--body); font-weight: 700; font-size: 12.5px; cursor: pointer;
+  background: #fff; border: 1.5px solid var(--line); color: var(--muted);
+  padding: 5px 13px; border-radius: var(--r-pill); transition: var(--t);
+}
+.mode-tab:hover { border-color: var(--ink); color: var(--ink); }
+.mode-tab.active { background: var(--ink); border-color: var(--ink); color: #fff; }
+.bulk-results { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+.bulk-row { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 7px 10px; border-radius: var(--r-sm); background: var(--sky); }
+.bulk-row.err { background: #FDECEC; color: #B3261E; }
+.bulk-row .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .panel-body { padding: 22px; }
 .panel-body .field { margin-bottom: 15px; }
 .panel-body label { display: block; font-weight: 800; font-size: 13.5px; margin-bottom: 6px; }

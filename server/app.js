@@ -204,6 +204,59 @@ app.get('/api/admin/orders/:id/files', requireAdmin, async (req, res) => {
 });
 
 const uploadFields = upload.fields([{ name: 'file', maxCount: 1 }, { name: 'cover', maxCount: 1 }]);
+const uploadMany = upload.array('files', 30);
+
+// Bulk-create one product per uploaded file, sharing the same grade/type/price/etc.
+// Titles are auto-derived from each filename (optionally prefixed) — rename individually afterwards if needed.
+app.post('/api/admin/products/bulk', requireAdmin, uploadMany, async (req, res) => {
+  try {
+    const incoming = req.files || [];
+    if (!incoming.length) return res.status(400).json({ error: 'Select at least one file to upload.' });
+
+    const body = req.body || {};
+    const isFree = body.isFree === 'true' || body.isFree === true;
+    const featured = body.featured === 'true' || body.featured === true;
+    const price = isFree ? 0 : Number(body.price || 0);
+    const grade = body.grade || 'all';
+    const type = body.type || 'worksheet';
+    const prefix = (body.titlePrefix || '').trim();
+
+    const products = await store.getProducts();
+    const created = [];
+    const failed = [];
+
+    const niceTitle = (filename) => {
+      const base = filename.replace(/\.[^./]+$/, '').replace(/[-_]+/g, ' ').trim();
+      const cased = base.replace(/\w\S*/g, (w) => w[0].toUpperCase() + w.slice(1).toLowerCase());
+      return prefix ? `${prefix} ${cased}` : cased;
+    };
+    const uniqueId = (title) => {
+      let id = slug(title) || 'activity';
+      let n = 2;
+      while (products.some(x => x.id === id) || created.some(x => x.id === id)) id = `${slug(title) || 'activity'}-${n++}`;
+      return id;
+    };
+
+    for (const file of incoming) {
+      try {
+        const title = niceTitle(file.originalname);
+        const id = uniqueId(title);
+        const fileUrl = await saveFile(file.originalname, file.buffer, file.mimetype);
+        const format = formatFor(file.mimetype);
+        created.push({
+          id, title, description: '', grade, type, isFree, featured, price,
+          format, fileUrl, preview: format === 'image' ? fileUrl : null,
+          createdAt: new Date().toISOString(),
+        });
+      } catch (e) {
+        failed.push({ name: file.originalname, error: e.message });
+      }
+    }
+
+    if (created.length) await store.setProducts([...products, ...created]);
+    res.json({ success: true, created, failed });
+  } catch (e) { res.status(400).json({ error: e.message }); }
+});
 
 app.post('/api/admin/products', requireAdmin, uploadFields, async (req, res) => {
   try {

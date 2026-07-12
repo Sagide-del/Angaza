@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/style.css?v=12" />
-<link rel="stylesheet" href="css/admin.css" />
+<link rel="stylesheet" href="css/admin.css?v=2" />
 </head>
 <body class="admin-body">
 
@@ -85,6 +85,10 @@
         <section class="panel">
           <div class="panel-head">
             <h2 id="formTitle">Add activity</h2>
+            <div class="mode-tabs" id="modeTabs">
+              <button class="mode-tab active" data-mode="single" type="button">Single</button>
+              <button class="mode-tab" data-mode="bulk" type="button">Bulk upload</button>
+            </div>
             <span class="editing" id="editing" hidden>Editing</span>
           </div>
           <div class="panel-body">
@@ -146,6 +150,47 @@
               </div>
               <div class="form-msg" id="formMsg"></div>
             </form>
+
+            <form id="bulkForm" hidden>
+              <p style="color:var(--muted);font-size:13.5px;margin-bottom:16px">Upload several files at once — e.g. 10 colouring pages. Each file becomes its own activity, titled from its filename. Rename any of them afterwards from the list on the right.</p>
+              <div class="field">
+                <label for="bTitlePrefix">Title prefix <span style="color:var(--muted);font-weight:600">(optional, e.g. "Grade 2")</span></label>
+                <input id="bTitlePrefix" placeholder="Leave blank to just use each filename" />
+              </div>
+              <div class="row-2">
+                <div class="field">
+                  <label for="bGrade">Level</label>
+                  <select id="bGrade"></select>
+                </div>
+                <div class="field">
+                  <label for="bType">Type</label>
+                  <select id="bType"></select>
+                </div>
+              </div>
+              <div class="field">
+                <label class="toggle"><input type="checkbox" id="bFree" /> <span>Free samples (no price)</span></label>
+              </div>
+              <div class="field">
+                <label class="toggle"><input type="checkbox" id="bFeatured" /> <span>Feature on homepage (Popular right now)</span></label>
+              </div>
+              <div class="field" id="bPriceRow">
+                <label for="bPrice">Price for each (KES)</label>
+                <input id="bPrice" type="number" min="0" step="10" placeholder="50" />
+              </div>
+              <div class="field">
+                <label>Files <span style="color:var(--muted);font-weight:600">(select up to 30 — PDF, image, audio, or ZIP)</span></label>
+                <label class="file-drop" id="bDrop">
+                  <svg class="icon" aria-hidden="true"><use href="#ic-upload"/></svg>
+                  <p id="bDropText">Tap to choose multiple files</p>
+                  <input type="file" id="bFiles" accept=".pdf,image/*,audio/*,.zip" multiple />
+                </label>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-block" id="bulkBtn"><svg class="icon" aria-hidden="true"><use href="#ic-upload"/></svg> <span id="bulkLabel">Upload files</span></button>
+              </div>
+              <div class="form-msg" id="bulkMsg"></div>
+              <div id="bulkResults"></div>
+            </form>
           </div>
         </section>
 
@@ -181,6 +226,6 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"><svg class="icon" aria-hidden="true"><use href="#ic-check"/></svg><span id="toastMsg"></span></div>
 
-<script src="js/admin.js?v=6"></script>
+<script src="js/admin.js?v=7"></script>
 </body>
 </html>

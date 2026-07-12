@@ -205,6 +205,8 @@ function renderBestSellers(list) {
 /* ---------------------------------------------------------- form setup */
 $('#fGrade').innerHTML = LEVELS.map(([v,l]) => `<option value="${v}">${l}</option>`).join('');
 $('#fType').innerHTML = TYPES.map(([v,l]) => `<option value="${v}">${l}</option>`).join('');
+$('#bGrade').innerHTML = LEVELS.map(([v,l]) => `<option value="${v}">${l}</option>`).join('');
+$('#bType').innerHTML = TYPES.map(([v,l]) => `<option value="${v}">${l}</option>`).join('');
 
 $('#fFree').addEventListener('change', (e) => { $('#priceRow').style.display = e.target.checked ? 'none' : 'grid'; });
 $('#fFile').addEventListener('change', (e) => {
@@ -214,6 +216,69 @@ $('#fFile').addEventListener('change', (e) => {
 $('#fCover').addEventListener('change', (e) => {
   const f = e.target.files[0];
   $('#coverText').innerHTML = f ? `<span class="name">${f.name}</span>` : 'Tap to choose a cover image';
+});
+
+/* ---------------------------------------------------------- add mode: single vs bulk */
+$$('.mode-tab').forEach(t => t.addEventListener('click', () => {
+  $$('.mode-tab').forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  const bulk = t.dataset.mode === 'bulk';
+  $('#prodForm').hidden = bulk;
+  $('#bulkForm').hidden = !bulk;
+  $('#editing').hidden = true;
+  if (bulk) { editingId = null; }
+}));
+
+/* ---------------------------------------------------------- bulk upload */
+$('#bFree').addEventListener('change', (e) => { $('#bPriceRow').style.display = e.target.checked ? 'none' : 'block'; });
+$('#bFiles').addEventListener('change', (e) => {
+  const n = e.target.files.length;
+  $('#bDropText').innerHTML = n ? `<span class="name">${n} file${n === 1 ? '' : 's'} selected</span>` : 'Tap to choose multiple files';
+});
+
+$('#bulkForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = $('#bulkMsg');
+  const results = $('#bulkResults');
+  msg.className = 'form-msg';
+  msg.textContent = '';
+  results.innerHTML = '';
+
+  const files = $('#bFiles').files;
+  if (!files.length) { msg.className = 'form-msg bad'; msg.textContent = 'Choose at least one file first.'; return; }
+
+  const fd = new FormData();
+  fd.append('titlePrefix', $('#bTitlePrefix').value.trim());
+  fd.append('grade', $('#bGrade').value);
+  fd.append('type', $('#bType').value);
+  fd.append('isFree', $('#bFree').checked);
+  fd.append('featured', $('#bFeatured').checked);
+  fd.append('price', $('#bPrice').value || 0);
+  [...files].forEach(f => fd.append('files', f));
+
+  const btn = $('#bulkBtn');
+  btn.disabled = true;
+  const label = $('#bulkLabel').textContent;
+  $('#bulkLabel').textContent = `Uploading ${files.length} file${files.length === 1 ? '' : 's'}…`;
+
+  try {
+    const data = await api('/api/admin/products/bulk', { method: 'POST', body: fd, isForm: true });
+    const created = data.created || [];
+    const failed = data.failed || [];
+    if (created.length) toast(`${created.length} activit${created.length === 1 ? 'y' : 'ies'} added`);
+    results.innerHTML = [
+      ...created.map(p => `<div class="bulk-row"><svg class="icon" aria-hidden="true"><use href="#ic-check"/></svg><span class="name">${p.title}</span></div>`),
+      ...failed.map(f => `<div class="bulk-row err"><svg class="icon" aria-hidden="true"><use href="#ic-trash"/></svg><span class="name">${f.name} — ${f.error}</span></div>`),
+    ].join('');
+    if (!failed.length) { $('#bulkForm').reset(); $('#bDropText').textContent = 'Tap to choose multiple files'; $('#bPriceRow').style.display = 'block'; }
+    await loadSummary();
+  } catch (err) {
+    msg.className = 'form-msg bad';
+    msg.textContent = err.message;
+  } finally {
+    btn.disabled = false;
+    $('#bulkLabel').textContent = label;
+  }
 });
 
 function resetForm() {
@@ -231,6 +296,9 @@ function resetForm() {
 $('#resetBtn').addEventListener('click', resetForm);
 
 function fillForm(p) {
+  $$('.mode-tab').forEach(x => x.classList.toggle('active', x.dataset.mode === 'single'));
+  $('#prodForm').hidden = false;
+  $('#bulkForm').hidden = true;
   editingId = p.id;
   $('#fId').value = p.id;
   $('#fTitle').value = p.title || '';
